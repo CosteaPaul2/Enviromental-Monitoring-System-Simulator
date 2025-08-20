@@ -1,0 +1,195 @@
+@import "tailwindcss";
+
+@config "../../tailwind.config.js";
+
+/* Theme transition for smooth switching */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Ensure theme persistence */
+html {
+  color-scheme: light dark;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+html.light {
+  color-scheme: light;
+}
+
+/* Enhanced scrollbar for dark theme */
+.dark ::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: hsl(var(--heroui-content1));
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: hsl(var(--heroui-content3));
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--heroui-content4));
+}
+
+/* Light theme scrollbar */
+.light ::-webkit-scrollbar {
+  width: 8px;
+}
+
+.light ::-webkit-scrollbar-track {
+  background: hsl(var(--heroui-content1));
+}
+
+.light ::-webkit-scrollbar-thumb {
+  background: hsl(var(--heroui-content3));
+  border-radius: 4px;
+}
+
+.light ::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--heroui-content4));
+}
+
+/* Custom focus styles */
+.dark *:focus-visible {
+  outline: 2px solid #801a86;
+  outline-offset: 2px;
+}
+
+.light *:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+/* Enhanced button and input visibility for dark theme */
+.dark button {
+  --heroui-foreground: #f4f1f8 !important;
+}
+
+.dark button[data-slot="base"] {
+  color: #f4f1f8 !important;
+}
+
+.dark input, 
+.dark textarea, 
+.dark select {
+  background-color: #2d2838 !important;
+  border-color: #443d5a !important;
+  color: #f4f1f8 !important;
+}
+
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus {
+  background-color: #443d5a !important;
+  border-color: #801a86 !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #9f8fba !important;
+  opacity: 0.8;
+}
+
+/* Button variant fixes for dark theme */
+.dark [data-variant="flat"] {
+  background-color: #443d5a !important;
+  color: #f4f1f8 !important;
+}
+
+.dark [data-variant="flat"]:hover {
+  background-color: #5a4d7a !important;
+}
+
+.dark [data-variant="bordered"] {
+  border-color: #695587 !important;
+  color: #f4f1f8 !important;
+}
+
+.dark [data-variant="light"] {
+  background-color: rgba(128, 26, 134, 0.1) !important;
+  color: #f4f1f8 !important;
+}
+
+.dark [data-variant="ghost"] {
+  color: #f4f1f8 !important;
+}
+
+.dark [data-variant="ghost"]:hover {
+  background-color: #443d5a !important;
+}
+
+/* Card and content improvements */
+.dark [data-slot="card"] {
+  background-color: #1a1625 !important;
+  border-color: #443d5a !important;
+}
+
+.dark [data-slot="card-header"] {
+  color: #f4f1f8 !important;
+}
+
+.dark [data-slot="card-body"] {
+  color: #eae6f0 !important;
+}
+
+/* Dropdown and menu improvements */
+.dark [data-slot="content"] {
+  background-color: #2d2838 !important;
+  border-color: #443d5a !important;
+}
+
+.dark [data-slot="item"] {
+  color: #f4f1f8 !important;
+}
+
+.dark [data-slot="item"]:hover {
+  background-color: #443d5a !important;
+}
+
+/* Text and typography improvements */
+.dark .text-default-500,
+.dark .text-default-400 {
+  color: #b8accc !important;
+}
+
+.dark .text-default-600 {
+  color: #9f8fba !important;
+}
+
+.dark .text-default-700 {
+  color: #8672a8 !important;
+}
+
+.dark .text-foreground {
+  color: #f4f1f8 !important;
+}
+
+/* Notification animations */
+@keyframes shrink-width {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+.animate-shrink-width {
+  animation: shrink-width linear forwards;
+}
+
+/* Enhanced notification shadows */
+.shadow-3xl {
+  box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.dark .shadow-3xl {
+  box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
