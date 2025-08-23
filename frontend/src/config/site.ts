@@ -2,14 +2,15 @@ export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
   name: "Environmental Monitor",
-  description: "Real-time environmental monitoring and pollution analysis system.",
+  description:
+    "Real-time environmental monitoring and pollution analysis system.",
   navItems: [
     {
       label: "Home",
       href: "/",
     },
     {
-      label: "Dashboard", 
+      label: "Dashboard",
       href: "/dashboard",
     },
     {

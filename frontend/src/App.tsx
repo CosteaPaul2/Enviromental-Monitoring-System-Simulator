@@ -11,6 +11,10 @@ import DashboardPage from "@/pages/dashboard";
 import SensorsPage from "@/pages/sensors";
 import SensorDetailPage from "@/pages/sensor-detail";
 import MapPage from "@/pages/map";
+import AdminDashboardPage from "@/pages/admin";
+import AdminUsersPage from "@/pages/admin-users";
+import AdminSensorsPage from "@/pages/admin-sensors";
+import AdminShapesPage from "@/pages/admin-shapes";
 
 function App() {
   return (
@@ -26,6 +30,10 @@ function App() {
       <Route element={<PricingPage />} path="/pricing" />
       <Route element={<BlogPage />} path="/blog" />
       <Route element={<AboutPage />} path="/about" />
+      <Route element={<AdminDashboardPage />} path="/admin" />
+      <Route element={<AdminUsersPage />} path="/admin/users" />
+      <Route element={<AdminSensorsPage />} path="/admin/sensors" />
+      <Route element={<AdminShapesPage />} path="/admin/shapes" />
     </Routes>
   );
 }

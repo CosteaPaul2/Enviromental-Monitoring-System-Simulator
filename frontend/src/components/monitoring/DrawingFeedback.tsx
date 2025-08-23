@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
-import { Icon } from '@iconify/react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useState } from "react";
+import { Icon } from "@iconify/react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface DrawingFeedbackProps {
   message: string;
-  type: 'info' | 'success' | 'warning';
+  type: "info" | "success" | "warning";
   duration?: number;
   onDismiss?: () => void;
 }
@@ -19,7 +19,7 @@ export function DrawingFeedback({
 
   useEffect(() => {
     setIsVisible(true);
-    
+
     if (duration > 0) {
       const timer = setTimeout(() => {
         setIsVisible(false);
@@ -32,19 +32,19 @@ export function DrawingFeedback({
 
   const config = {
     info: {
-      icon: 'tabler:info-circle',
-      bgColor: 'bg-blue-500/90',
-      iconColor: 'text-blue-200',
+      icon: "tabler:info-circle",
+      bgColor: "bg-blue-500/90",
+      iconColor: "text-blue-200",
     },
     success: {
-      icon: 'tabler:check',
-      bgColor: 'bg-success-500/90',
-      iconColor: 'text-success-200',
+      icon: "tabler:check",
+      bgColor: "bg-success-500/90",
+      iconColor: "text-success-200",
     },
     warning: {
-      icon: 'tabler:alert-triangle',
-      bgColor: 'bg-warning-500/90',
-      iconColor: 'text-warning-200',
+      icon: "tabler:alert-triangle",
+      bgColor: "bg-warning-500/90",
+      iconColor: "text-warning-200",
     },
   }[type];
 
@@ -52,10 +52,10 @@ export function DrawingFeedback({
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
           className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50"
+          exit={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: 20 }}
         >
           <div
             className={`
@@ -65,7 +65,10 @@ export function DrawingFeedback({
               border border-white/10
             `}
           >
-            <Icon icon={config.icon} className={`text-xl ${config.iconColor}`} />
+            <Icon
+              className={`text-xl ${config.iconColor}`}
+              icon={config.icon}
+            />
             <span className="text-sm font-medium">{message}</span>
           </div>
         </motion.div>

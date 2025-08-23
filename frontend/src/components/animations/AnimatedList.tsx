@@ -1,5 +1,6 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { useAnimations } from '@/hooks/useAnimations';
+import { motion, AnimatePresence } from "framer-motion";
+
+import { useAnimations } from "@/hooks/useAnimations";
 
 interface AnimatedListProps {
   items: React.ReactNode[];
@@ -18,25 +19,25 @@ export function AnimatedList({
 
   return (
     <motion.div
-      variants={animations.list}
-      initial="initial"
       animate="animate"
-      exit="exit"
       className={className}
+      exit="exit"
+      initial="initial"
+      variants={animations.list}
     >
       <AnimatePresence>
         {items.map((item, index) => (
           <motion.div
             key={index}
-            variants={animations.listItem(index)}
-            initial="initial"
             animate="animate"
-            exit="exit"
             className={itemClassName}
+            exit="exit"
+            initial="initial"
             transition={{
               duration: 0.2,
               delay: delay + index * 0.1,
             }}
+            variants={animations.listItem(index)}
           >
             {item}
           </motion.div>

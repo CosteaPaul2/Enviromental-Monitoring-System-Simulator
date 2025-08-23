@@ -2,9 +2,9 @@ export interface DrawingTool {
   id: string;
   name: string;
   icon: string;
-  color: 'primary' | 'secondary' | 'success' | 'warning' | 'danger';
+  color: "primary" | "secondary" | "success" | "warning" | "danger";
   description: string;
-  dbType: 'POLYGON' | 'RECTANGLE' | 'CIRCLE';
+  dbType: "POLYGON" | "RECTANGLE" | "CIRCLE";
 }
 
 export interface DrawingPanelProps {

@@ -15,7 +15,7 @@ export default class AuthService {
     return AuthService.instance
   }
 
-  public async register(email: string, password: string, name: string) {
+  public async register(email: string, password: string, name: string, role: 'USER' | 'ADMIN' = 'USER') {
     try {
       const existingUser = await this.prisma.user.findUnique({
         where: { email },
@@ -31,6 +31,7 @@ export default class AuthService {
           email,
           password: hashedPassword,
           name,
+          role,
         },
       })
 
@@ -38,6 +39,7 @@ export default class AuthService {
         id: user.id,
         email: user.email,
         name: user.name,
+        role: user.role,
       }
     } catch (error) {
       console.error('Error during user registration:', error)
@@ -78,6 +80,7 @@ export default class AuthService {
           id: user.id,
           email: user.email,
           name: user.name,
+          role: user.role,
         },
         accessToken,
       }
@@ -113,6 +116,7 @@ export default class AuthService {
         id: tokenRecord.user.id,
         email: tokenRecord.user.email,
         name: tokenRecord.user.name,
+        role: tokenRecord.user.role,
       }
     } catch (error) {
       console.error('Error during token validation:', error)

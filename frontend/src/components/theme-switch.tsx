@@ -3,7 +3,6 @@ import { VisuallyHidden } from "@react-aria/visually-hidden";
 import { SwitchProps, useSwitch } from "@heroui/switch";
 import clsx from "clsx";
 import { useTheme } from "@heroui/use-theme";
-
 import { Icon } from "@iconify/react";
 
 export interface ThemeSwitchProps {
@@ -11,21 +10,24 @@ export interface ThemeSwitchProps {
   classNames?: SwitchProps["classNames"];
 }
 
-const THEME_STORAGE_KEY = 'environmental-monitoring-theme';
+const THEME_STORAGE_KEY = "environmental-monitoring-theme";
 
 export const ThemeSwitch: FC<ThemeSwitchProps> = ({
   className,
   classNames,
 }) => {
   const [isMounted, setIsMounted] = useState(false);
-  const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>('dark');
+  const [currentTheme, setCurrentTheme] = useState<"light" | "dark">("dark");
 
   const { setTheme } = useTheme();
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) as 'light' | 'dark' | null;
-    const initialTheme = savedTheme || 'dark';
-    
+    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) as
+      | "light"
+      | "dark"
+      | null;
+    const initialTheme = savedTheme || "dark";
+
     setCurrentTheme(initialTheme);
     setTheme(initialTheme);
     setIsMounted(true);
@@ -33,18 +35,20 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({
 
   const handleThemeChange = () => {
     const newTheme = currentTheme === "light" ? "dark" : "light";
-    
+
     setCurrentTheme(newTheme);
     setTheme(newTheme);
-    
+
     localStorage.setItem(THEME_STORAGE_KEY, newTheme);
-    
-    document.documentElement.classList.remove('light', 'dark');
+
+    document.documentElement.classList.remove("light", "dark");
     document.documentElement.classList.add(newTheme);
-    
-    window.dispatchEvent(new CustomEvent('theme-changed', { 
-      detail: { theme: newTheme }
-    }));
+
+    window.dispatchEvent(
+      new CustomEvent("theme-changed", {
+        detail: { theme: newTheme },
+      }),
+    );
   };
 
   const {
@@ -91,25 +95,25 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({
               "px-2 py-2",
               "mx-0",
               "hover:bg-content2",
-              "transition-all duration-200"
+              "transition-all duration-200",
             ],
             classNames?.wrapper,
           ),
         })}
       >
         {isSelected ? (
-          <Icon 
-            icon="tabler:moon" 
-            width={22} 
-            height={22} 
+          <Icon
             className="text-primary"
+            height={22}
+            icon="tabler:moon"
+            width={22}
           />
         ) : (
-          <Icon 
-            icon="tabler:sun" 
-            width={22} 
+          <Icon
+            className="text-warning"
             height={22}
-            className="text-warning" 
+            icon="tabler:sun"
+            width={22}
           />
         )}
       </div>

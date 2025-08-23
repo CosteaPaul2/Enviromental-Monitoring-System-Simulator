@@ -1,6 +1,6 @@
+import { motion, AnimatePresence } from "framer-motion";
 
-import { motion, AnimatePresence } from 'framer-motion';
-import { useAnimations } from '@/hooks/useAnimations';
+import { useAnimations } from "@/hooks/useAnimations";
 
 interface AnimatedContainerProps {
   children: React.ReactNode;
@@ -21,25 +21,26 @@ export function AnimatedContainer({
 }: AnimatedContainerProps) {
   const animations = useAnimations();
   const animationValue = animations[animation];
-  
+
   // Handle function-based animations (like listItem)
-  const variants = typeof animationValue === 'function' 
-    ? animationValue(index ?? 0)
-    : animationValue;
+  const variants =
+    typeof animationValue === "function"
+      ? animationValue(index ?? 0)
+      : animationValue;
 
   return (
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          variants={variants}
-          initial="initial"
           animate="animate"
-          exit="exit"
           className={className}
+          exit="exit"
+          initial="initial"
           transition={{
             duration: 0.2,
             delay,
           }}
+          variants={variants}
         >
           {children}
         </motion.div>

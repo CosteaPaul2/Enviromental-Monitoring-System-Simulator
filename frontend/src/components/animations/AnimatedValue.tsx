@@ -1,5 +1,6 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { useAnimations } from '@/hooks/useAnimations';
+import { motion, AnimatePresence } from "framer-motion";
+
+import { useAnimations } from "@/hooks/useAnimations";
 
 interface AnimatedValueProps {
   value: string | number;
@@ -7,22 +8,18 @@ interface AnimatedValueProps {
   color?: string;
 }
 
-export function AnimatedValue({
-  value,
-  className,
-  color,
-}: AnimatedValueProps) {
+export function AnimatedValue({ value, className, color }: AnimatedValueProps) {
   const animations = useAnimations();
 
   return (
     <AnimatePresence mode="wait">
       <motion.div
         key={value.toString()}
-        variants={animations.sensorValue}
-        initial="initial"
         animate="animate"
-        exit="exit"
         className={`${className} ${color}`}
+        exit="exit"
+        initial="initial"
+        variants={animations.sensorValue}
       >
         {value}
       </motion.div>

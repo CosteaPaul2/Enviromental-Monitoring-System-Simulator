@@ -41,3 +41,27 @@ router
     router.get('/sensors/:sensorId/shapes', '#controllers/shape_controller.getShapesContainingSensor')
   })
   .use(middleware.auth())
+
+// Admin routes
+router
+  .group(() => {
+    // Dashboard
+    router.get('/admin/dashboard/stats', '#controllers/admin_controller.getDashboardStats')
+    router.get('/admin/analytics', '#controllers/admin_controller.getSystemAnalytics')
+    
+    // User management
+    router.get('/admin/users', '#controllers/admin_controller.getUsers')
+    router.post('/admin/users', '#controllers/admin_controller.createUser')
+    router.put('/admin/users/:id', '#controllers/admin_controller.updateUser')
+    router.delete('/admin/users/:id', '#controllers/admin_controller.deleteUser')
+    
+    // Sensor management
+    router.get('/admin/sensors', '#controllers/admin_controller.getAllSensors')
+    router.delete('/admin/sensors/:id', '#controllers/admin_controller.deleteSensor')
+    
+    // Shape management
+    router.get('/admin/shapes', '#controllers/admin_controller.getAllShapes')
+    router.get('/admin/shapes/:id', '#controllers/admin_controller.getShapeDetails')
+    router.delete('/admin/shapes/:id', '#controllers/admin_controller.deleteShape')
+  })
+  .use([middleware.auth(), middleware.admin()])

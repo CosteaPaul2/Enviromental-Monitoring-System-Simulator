@@ -19,18 +19,15 @@ import { useAuth } from "@/contexts/AuthContext";
 
 export const Navbar = () => {
   const location = useLocation();
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
 
   return (
     <HeroUINavbar maxWidth="xl" position="sticky">
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand className="gap-3 max-w-fit">
-          <RouterLink
-            to="/"
-            className="flex justify-start items-center gap-2"
-          >
+          <RouterLink className="flex justify-start items-center gap-2" to="/">
             <div className="p-1.5 rounded-lg bg-gradient-to-br from-green-500 to-blue-500">
-              <Icon icon="tabler:world" className="text-white text-xl" />
+              <Icon className="text-white text-xl" icon="tabler:world" />
             </div>
             <div className="flex flex-col">
               <p className="font-bold text-inherit text-sm">Environmental</p>
@@ -40,14 +37,17 @@ export const Navbar = () => {
         </NavbarBrand>
         <div className="hidden lg:flex gap-4 justify-start ml-2">
           {siteConfig.navItems.map((item) => (
-            <NavbarItem key={item.href} isActive={location.pathname === item.href}>
+            <NavbarItem
+              key={item.href}
+              isActive={location.pathname === item.href}
+            >
               <RouterLink
-                to={item.href}
                 className={clsx(
                   linkStyles({ color: "foreground" }),
                   "transition-colors hover:text-primary",
-                  location.pathname === item.href && "text-primary font-medium"
+                  location.pathname === item.href && "text-primary font-medium",
                 )}
+                to={item.href}
               >
                 {item.label}
               </RouterLink>
@@ -64,13 +64,25 @@ export const Navbar = () => {
           <ThemeSwitch />
         </NavbarItem>
         {user ? (
-          <NavbarItem className="hidden md:flex">
+          <NavbarItem className="hidden md:flex gap-2">
+            {isAdmin && (
+              <Button
+                as={RouterLink}
+                color="warning"
+                size="sm"
+                startContent={<Icon icon="tabler:shield-check" />}
+                to="/admin"
+                variant="flat"
+              >
+                Admin
+              </Button>
+            )}
             <Button
               color="danger"
-              variant="flat"
               size="sm"
-              onPress={logout}
               startContent={<Icon icon="tabler:logout" />}
+              variant="flat"
+              onPress={logout}
             >
               Logout
             </Button>
@@ -79,19 +91,19 @@ export const Navbar = () => {
           <NavbarItem className="hidden md:flex gap-2">
             <Button
               as={RouterLink}
-              to="/login"
-              variant="flat"
               size="sm"
               startContent={<Icon icon="tabler:login" />}
+              to="/login"
+              variant="flat"
             >
               Login
             </Button>
             <Button
               as={RouterLink}
-              to="/register"
               color="primary"
               size="sm"
               startContent={<Icon icon="tabler:user-plus" />}
+              to="/register"
             >
               Register
             </Button>
@@ -109,11 +121,13 @@ export const Navbar = () => {
           {siteConfig.navItems.map((item, index) => (
             <NavbarMenuItem key={`${item.href}-${index}`}>
               <RouterLink
-                to={item.href}
                 className={clsx(
                   "w-full text-lg",
-                  location.pathname === item.href ? "text-primary font-medium" : "text-foreground"
+                  location.pathname === item.href
+                    ? "text-primary font-medium"
+                    : "text-foreground",
                 )}
+                to={item.href}
               >
                 {item.label}
               </RouterLink>
@@ -121,28 +135,45 @@ export const Navbar = () => {
           ))}
           <div className="mt-4 pt-4 border-t border-divider">
             {user ? (
-              <NavbarMenuItem>
-                <Button
-                  color="danger"
-                  variant="flat"
-                  size="sm"
-                  onPress={logout}
-                  startContent={<Icon icon="tabler:logout" />}
-                  className="w-full justify-start"
-                >
-                  Logout
-                </Button>
-              </NavbarMenuItem>
+              <>
+                {isAdmin && (
+                  <NavbarMenuItem>
+                    <Button
+                      as={RouterLink}
+                      className="w-full justify-start"
+                      color="warning"
+                      size="sm"
+                      startContent={<Icon icon="tabler:shield-check" />}
+                      to="/admin"
+                      variant="flat"
+                    >
+                      Admin Panel
+                    </Button>
+                  </NavbarMenuItem>
+                )}
+                <NavbarMenuItem>
+                  <Button
+                    className="w-full justify-start"
+                    color="danger"
+                    size="sm"
+                    startContent={<Icon icon="tabler:logout" />}
+                    variant="flat"
+                    onPress={logout}
+                  >
+                    Logout
+                  </Button>
+                </NavbarMenuItem>
+              </>
             ) : (
               <>
                 <NavbarMenuItem>
                   <Button
                     as={RouterLink}
-                    to="/login"
-                    variant="flat"
+                    className="w-full justify-start"
                     size="sm"
                     startContent={<Icon icon="tabler:login" />}
-                    className="w-full justify-start"
+                    to="/login"
+                    variant="flat"
                   >
                     Login
                   </Button>
@@ -150,11 +181,11 @@ export const Navbar = () => {
                 <NavbarMenuItem>
                   <Button
                     as={RouterLink}
-                    to="/register"
+                    className="w-full justify-start"
                     color="primary"
                     size="sm"
                     startContent={<Icon icon="tabler:user-plus" />}
-                    className="w-full justify-start"
+                    to="/register"
                   >
                     Register
                   </Button>
