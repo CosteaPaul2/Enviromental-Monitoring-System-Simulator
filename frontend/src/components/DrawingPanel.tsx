@@ -33,26 +33,26 @@ interface DrawingTool {
 const drawingTools: DrawingTool[] = [
   {
     id: "polygon",
-    name: "Polygon",
+    name: "Custom Area",
     icon: "tabler:polygon",
     color: "success",
-    description: "Click corners, double-click to close",
+    description: "Draw irregular monitoring zones - click corners, double-click to finish",
     dbType: "POLYGON",
   },
   {
     id: "rectangle",
-    name: "Rectangle",
+    name: "Monitoring Zone",
     icon: "tabler:square",
     color: "warning",
-    description: "Click and drag to draw rectangle",
+    description: "Create rectangular area boundaries - click and drag to draw",
     dbType: "RECTANGLE",
   },
   {
     id: "circle",
-    name: "Circle",
+    name: "Impact Radius",
     icon: "tabler:circle",
     color: "primary",
-    description: "Click center, drag to set radius",
+    description: "Define circular impact zones - click center, drag to set radius",
     dbType: "CIRCLE",
   },
 ];
@@ -77,12 +77,12 @@ export default function DrawingPanel({
     <Card className="w-full max-w-md">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between w-full">
-          <h3 className="text-lg font-semibold">Drawing Tools</h3>
+          <h3 className="text-lg font-semibold">Zone Creation</h3>
           <div className="flex gap-2">
             {(shapesCount > 0 ||
               (drawnShapesCount && drawnShapesCount > 0)) && (
               <Chip color="primary" size="sm" variant="flat">
-                {shapesCount || drawnShapesCount} shapes
+                {shapesCount || drawnShapesCount} zones
               </Chip>
             )}
           </div>
@@ -171,7 +171,7 @@ export default function DrawingPanel({
 
             <div className="space-y-3">
               <h4 className="text-sm font-medium text-foreground-600">
-                Select Tool
+                Select Monitoring Zone Type
               </h4>
 
               <div className="grid grid-cols-2 gap-2">
@@ -243,20 +243,20 @@ export default function DrawingPanel({
                       crosshair.
                       {selectedTool === "rectangle" && (
                         <div className="mt-1">
-                          <strong>Rectangle:</strong> Click and drag to draw a
-                          rectangle
+                          <strong>Monitoring Zone:</strong> Click and drag to create
+                          rectangular area boundaries
                         </div>
                       )}
                       {selectedTool === "polygon" && (
                         <div className="mt-1">
-                          <strong>Polygon:</strong> Click to add points,
-                          double-click to finish
+                          <strong>Custom Area:</strong> Click to add boundary points,
+                          double-click to finish zone
                         </div>
                       )}
                       {selectedTool === "circle" && (
                         <div className="mt-1">
-                          <strong>Circle:</strong> Click center, drag to set
-                          radius, release to finish
+                          <strong>Impact Radius:</strong> Click center point, drag to set
+                          radius for circular impact zone
                         </div>
                       )}
                     </div>
@@ -283,7 +283,7 @@ export default function DrawingPanel({
                   variant="flat"
                   onPress={onClearShapes || onClearAllShapes}
                 >
-                  Clear All Shapes ({shapesCount || drawnShapesCount})
+                  Clear All Zones ({shapesCount || drawnShapesCount})
                 </Button>
               </>
             )}
@@ -297,7 +297,7 @@ export default function DrawingPanel({
                 variant="solid"
                 onPress={onSaveShape}
               >
-                Save Shapes ({shapesCount})
+                Save Monitoring Zones ({shapesCount})
               </Button>
             )}
           </>

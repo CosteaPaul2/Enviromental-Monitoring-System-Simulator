@@ -59,6 +59,7 @@
     "@adonisjs/redis": "^9.2.0",
     "@prisma/client": "^6.11.1",
     "@vinejs/vine": "^3.0.1",
+    "axios": "^1.11.0",
     "bcrypt": "^6.0.0",
     "luxon": "^3.7.1",
     "pg": "^8.16.3",

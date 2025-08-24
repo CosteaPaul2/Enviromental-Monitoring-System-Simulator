@@ -20,6 +20,8 @@ import HistoricalTimePicker from "@/components/monitoring/HistoricalTimePicker";
 import { ClientZone } from "@/components/GeometryOperationsPanel";
 import { performGeometryOperation } from "@/lib/simpleTurfGeometry";
 import { Sensor, sensorsApi } from "@/lib/sensorsApi";
+import { spatialAnalysisApi, generateAnalysisSummary, isHighPriorityArea, getPriorityAlertMessage } from "@/lib/spatialAnalysisApi";
+import { useSuccessNotification, useWarningNotification, useErrorNotification } from "@/contexts/NotificationContext";
 
 const api = axios.create({
   baseURL: "http://localhost:3333",
@@ -74,6 +76,11 @@ export default function MapPage() {
   const [clientZones, setClientZones] = useState<ClientZone[]>([]);
   const [selectedZones, setSelectedZones] = useState<string[]>([]);
   const [operationResults, setOperationResults] = useState<ClientZone[]>([]);
+
+  // Notification hooks
+  const addSuccessNotification = useSuccessNotification();
+  const addWarningNotification = useWarningNotification();
+  const addErrorNotification = useErrorNotification();
 
   // Load user's saved shapes on component mount and when refresh triggered
   useEffect(() => {
@@ -394,9 +401,55 @@ export default function MapPage() {
   };
 
   // Client zone handlers
-  const handleClientZoneCreated = (zone: ClientZone) => {
+  const handleClientZoneCreated = async (zone: ClientZone) => {
     setClientZones((prev) => [...prev, zone]);
     setSelectedTool(null); // Clear drawing tool after creation
+    
+    // Automatically analyze the new zone for population impact
+    try {
+      addSuccessNotification(
+        "Analysis Zone Created", 
+        `${zone.name} ready for analysis - fetching population data...`,
+        { duration: 3000, icon: "tabler:map-pin-plus" }
+      );
+      
+      const response = await spatialAnalysisApi.analyzeClientZone({
+        geometry: zone.geometry,
+        name: zone.name
+      });
+
+      if (response.success && response.data) {
+        const analysis = response.data.analysis;
+        
+        // Show detailed notification with analysis results
+        if (isHighPriorityArea(analysis)) {
+          const alertMessage = getPriorityAlertMessage(analysis);
+          if (analysis.riskAssessment.level === 'critical') {
+            addWarningNotification("Critical Area Detected", alertMessage!, {
+              persistent: true,
+              icon: "tabler:alert-triangle"
+            });
+          } else {
+            addWarningNotification("High-Risk Area", alertMessage!, {
+              duration: 10000,
+              icon: "tabler:shield-x"
+            });
+          }
+        } else {
+          addSuccessNotification(
+            "Analysis Complete", 
+            `${zone.name}: ${generateAnalysisSummary(analysis)}`,
+            { duration: 6000, icon: "tabler:chart-area" }
+          );
+        }
+      }
+    } catch (error) {
+      console.warn("Failed to auto-analyze client zone:", error);
+      addErrorNotification(
+        "Analysis Error", 
+        "Could not analyze zone automatically - you can analyze it manually from the panel"
+      );
+    }
   };
 
   const handleClientZoneSelect = (zoneId: string) => {

@@ -1,9 +1,27 @@
+import { useState } from "react";
 import { Card, CardHeader, CardBody } from "@heroui/card";
 import { Button } from "@heroui/button";
 import { Chip } from "@heroui/chip";
 import { Icon } from "@iconify/react";
+import { Tooltip } from "@heroui/tooltip";
 
 import { ClientZone } from "../types/geometry";
+import { 
+  spatialAnalysisApi, 
+  ClientZoneAnalysis,
+  formatPopulation,
+  formatArea,
+  getRiskColor,
+  getRiskIcon,
+  generateAnalysisSummary,
+  isHighPriorityArea,
+  getPriorityAlertMessage
+} from "@/lib/spatialAnalysisApi";
+import {
+  useSuccessNotification,
+  useErrorNotification,
+  useWarningNotification,
+} from "@/contexts/NotificationContext";
 
 export type { ClientZone };
 
@@ -23,21 +41,21 @@ interface GeometryOperationsPanelProps {
 const drawingTools = [
   {
     id: "geo-rectangle",
-    name: "Rectangle",
+    name: "Analysis Area",
     icon: "tabler:square",
-    description: "Draw rectangular zones",
+    description: "Draw rectangular analysis zones to assess population impact",
   },
   {
     id: "geo-polygon",
-    name: "Polygon",
+    name: "Custom Analysis",
     icon: "tabler:polygon",
-    description: "Draw custom polygon zones",
+    description: "Draw custom shapes to analyze irregular areas",
   },
   {
     id: "geo-circle",
-    name: "Circle",
+    name: "Impact Zone",
     icon: "tabler:circle",
-    description: "Draw circular zones",
+    description: "Draw circular zones to assess radial impact areas",
   },
 ];
 
@@ -102,8 +120,65 @@ export default function GeometryOperationsPanel({
   operationResults = [],
   onClearResults,
 }: GeometryOperationsPanelProps) {
+  const [zoneAnalysis, setZoneAnalysis] = useState<Map<string, ClientZoneAnalysis>>(new Map());
+  const [analyzingZones, setAnalyzingZones] = useState<Set<string>>(new Set());
+  
+  const addSuccessNotification = useSuccessNotification();
+  const addErrorNotification = useErrorNotification();
+  const addWarningNotification = useWarningNotification();
+
   const selectedZoneCount = selectedZones.length;
   const totalZones = clientZones.length;
+
+  const analyzeZone = async (zone: ClientZone) => {
+    if (analyzingZones.has(zone.id)) return;
+
+    setAnalyzingZones(prev => new Set(prev).add(zone.id));
+
+    try {
+      const response = await spatialAnalysisApi.analyzeClientZone({
+        geometry: zone.geometry,
+        name: zone.name
+      });
+
+      if (response.success && response.data) {
+        setZoneAnalysis(prev => new Map(prev).set(zone.id, response.data!));
+        
+        // Show notification for high-priority areas
+        if (isHighPriorityArea(response.data.analysis)) {
+          const alertMessage = getPriorityAlertMessage(response.data.analysis);
+          if (alertMessage) {
+            if (response.data.analysis.riskAssessment.level === 'critical') {
+              addWarningNotification("Critical Area Detected", alertMessage, {
+                persistent: true,
+                icon: "tabler:alert-triangle"
+              });
+            } else {
+              addSuccessNotification("Analysis Complete", `${zone.name}: ${generateAnalysisSummary(response.data.analysis)}`, {
+                duration: 8000,
+                icon: "tabler:chart-area"
+              });
+            }
+          }
+        }
+      } else {
+        addErrorNotification("Analysis Failed", response.message || "Could not analyze zone");
+      }
+    } catch (error) {
+      console.error("Failed to analyze zone:", error);
+      addErrorNotification("Analysis Error", "Failed to perform spatial analysis");
+    } finally {
+      setAnalyzingZones(prev => {
+        const next = new Set(prev);
+        next.delete(zone.id);
+        return next;
+      });
+    }
+  };
+
+  const getZoneAnalysis = (zoneId: string): ClientZoneAnalysis | undefined => {
+    return zoneAnalysis.get(zoneId);
+  };
 
   return (
     <div className="flex flex-col h-full space-y-4">
@@ -233,24 +308,128 @@ export default function GeometryOperationsPanel({
                         </div>
                       </div>
                     </div>
-                    <div
-                      onClick={(e) => {
-                        e.stopPropagation();
-                      }}
-                    >
-                      <Button
-                        isIconOnly
-                        className="opacity-60 hover:opacity-100 w-6 h-6 flex-shrink-0 ml-2"
-                        color="danger"
-                        size="sm"
-                        title={`Delete ${zone.name}`}
-                        variant="light"
-                        onPress={() => onZoneDelete(zone.id)}
-                      >
-                        <Icon className="text-xs" icon="tabler:trash" />
-                      </Button>
+                    <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                      {/* Analysis button */}
+                      <Tooltip content="Analyze population impact">
+                        <Button
+                          isIconOnly
+                          className="opacity-60 hover:opacity-100 w-6 h-6 flex-shrink-0"
+                          color={getZoneAnalysis(zone.id) ? "success" : "primary"}
+                          isLoading={analyzingZones.has(zone.id)}
+                          size="sm"
+                          variant="flat"
+                          onPress={() => analyzeZone(zone)}
+                        >
+                          {!analyzingZones.has(zone.id) && (
+                            <Icon 
+                              icon={getZoneAnalysis(zone.id) ? "tabler:chart-area-filled" : "tabler:chart-area"}
+                              className="text-xs"
+                            />
+                          )}
+                        </Button>
+                      </Tooltip>
+                      
+                      {/* Delete button */}
+                      <Tooltip content="Delete zone">
+                        <Button
+                          isIconOnly
+                          className="opacity-60 hover:opacity-100 w-6 h-6 flex-shrink-0"
+                          color="danger"
+                          size="sm"
+                          variant="light"
+                          onPress={() => onZoneDelete(zone.id)}
+                        >
+                          <Icon className="text-xs" icon="tabler:trash" />
+                        </Button>
+                      </Tooltip>
                     </div>
                   </div>
+                  
+                  {/* Analysis results */}
+                  {getZoneAnalysis(zone.id) && (
+                    <div className="mt-2 p-2 bg-content1 rounded border border-divider">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <Icon 
+                            icon={getRiskIcon(getZoneAnalysis(zone.id)!.analysis.riskAssessment.level)}
+                            className="text-sm"
+                            style={{ color: getRiskColor(getZoneAnalysis(zone.id)!.analysis.riskAssessment.level) }}
+                          />
+                          <span className="text-xs font-medium">Impact Analysis</span>
+                        </div>
+                        <Chip 
+                          size="sm" 
+                          variant="flat"
+                          style={{ 
+                            backgroundColor: `${getRiskColor(getZoneAnalysis(zone.id)!.analysis.riskAssessment.level)}20`,
+                            color: getRiskColor(getZoneAnalysis(zone.id)!.analysis.riskAssessment.level)
+                          }}
+                        >
+                          {getZoneAnalysis(zone.id)!.analysis.riskAssessment.level.toUpperCase()} RISK
+                        </Chip>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                          <span className="text-default-500">Population:</span>
+                          <br />
+                          <span className="font-medium">
+                            {formatPopulation(getZoneAnalysis(zone.id)!.analysis.population)}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-default-500">Area:</span>
+                          <br />
+                          <span className="font-medium">
+                            {formatArea(getZoneAnalysis(zone.id)!.analysis.population.area)}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-default-500">Hospitals:</span>
+                          <br />
+                          <span className="font-medium">
+                            {getZoneAnalysis(zone.id)!.analysis.infrastructure.healthcare.hospitals}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-default-500">Schools:</span>
+                          <br />
+                          <span className="font-medium">
+                            {getZoneAnalysis(zone.id)!.analysis.infrastructure.education.schools}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      {getZoneAnalysis(zone.id)!.analysis.sensors.total > 0 && (
+                        <div className="mt-2 p-1 bg-primary/10 rounded text-xs">
+                          <Icon icon="tabler:device-analytics" className="inline mr-1 text-primary" />
+                          <span className="text-primary font-medium">
+                            {getZoneAnalysis(zone.id)!.analysis.sensors.active}/
+                            {getZoneAnalysis(zone.id)!.analysis.sensors.total} sensors active
+                          </span>
+                        </div>
+                      )}
+                      
+                      {getZoneAnalysis(zone.id)!.analysis.riskAssessment.factors.length > 0 && (
+                        <div className="mt-2">
+                          <div className="text-xs text-default-500 mb-1">Risk Factors:</div>
+                          <div className="text-xs space-y-1">
+                            {getZoneAnalysis(zone.id)!.analysis.riskAssessment.factors.slice(0, 2).map((factor, idx) => (
+                              <div key={idx} className="flex items-start gap-1">
+                                <Icon icon="tabler:alert-circle" className="text-warning mt-0.5 text-xs flex-shrink-0" />
+                                <span className="text-warning">{factor}</span>
+                              </div>
+                            ))}
+                            {getZoneAnalysis(zone.id)!.analysis.riskAssessment.factors.length > 2 && (
+                              <div className="text-xs text-default-400">
+                                +{getZoneAnalysis(zone.id)!.analysis.riskAssessment.factors.length - 2} more factors
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

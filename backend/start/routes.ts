@@ -39,6 +39,9 @@ router
     // Spatial query routes
     router.get('/shapes/:id/sensors', '#controllers/shape_controller.getSensorsInShape')
     router.get('/sensors/:sensorId/shapes', '#controllers/shape_controller.getShapesContainingSensor')
+    
+    // Spatial analysis routes for client zones (temporary geometry operations)
+    router.post('/analysis/zone', '#controllers/spatial_analysis_controller.analyzeClientZone')
   })
   .use(middleware.auth())
 
