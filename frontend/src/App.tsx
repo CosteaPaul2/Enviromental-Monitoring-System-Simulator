@@ -1,7 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 
 import IndexPage from "@/pages/index";
-import DocsPage from "@/pages/docs";
 import PricingPage from "@/pages/pricing";
 import BlogPage from "@/pages/blog";
 import AboutPage from "@/pages/about";
@@ -15,6 +14,7 @@ import AdminDashboardPage from "@/pages/admin";
 import AdminUsersPage from "@/pages/admin-users";
 import AdminSensorsPage from "@/pages/admin-sensors";
 import AdminShapesPage from "@/pages/admin-shapes";
+import AnalyticsPage from "@/pages/analytics";
 
 function App() {
   return (
@@ -26,7 +26,7 @@ function App() {
       <Route element={<SensorsPage />} path="/sensors" />
       <Route element={<SensorDetailPage />} path="/sensors/:id" />
       <Route element={<MapPage />} path="/map" />
-      <Route element={<DocsPage />} path="/docs" />
+      <Route element={<AnalyticsPage />} path="/analytics" />
       <Route element={<PricingPage />} path="/pricing" />
       <Route element={<BlogPage />} path="/blog" />
       <Route element={<AboutPage />} path="/about" />

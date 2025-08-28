@@ -15,7 +15,12 @@ export default class AuthService {
     return AuthService.instance
   }
 
-  public async register(email: string, password: string, name: string, role: 'USER' | 'ADMIN' = 'USER') {
+  public async register(
+    email: string,
+    password: string,
+    name: string,
+    role: 'USER' | 'ADMIN' = 'USER'
+  ) {
     try {
       const existingUser = await this.prisma.user.findUnique({
         where: { email },
@@ -63,7 +68,7 @@ export default class AuthService {
       }
 
       const accessToken = uuidv4()
-      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000) 
+      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000)
 
       await this.prisma.accessToken.create({
         data: {

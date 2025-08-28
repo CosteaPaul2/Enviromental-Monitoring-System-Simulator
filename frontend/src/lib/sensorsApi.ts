@@ -249,15 +249,15 @@ export const getPollutionColor = (
 ): string => {
   switch (level) {
     case "good":
-      return "#22c55e"; // Green
+      return "#22c55e";
     case "moderate":
-      return "#f59e0b"; // Yellow/Orange
+      return "#f59e0b";
     case "unhealthy":
-      return "#ef4444"; // Red
+      return "#ef4444";
     case "dangerous":
-      return "#7c2d12"; // Dark red
+      return "#7c2d12";
     case "no-data":
-      return "#6b7280"; // Gray
+      return "#6b7280";
     default:
       return "#6b7280";
   }

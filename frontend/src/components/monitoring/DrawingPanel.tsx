@@ -90,7 +90,6 @@ export default function DrawingPanel({
       </CardHeader>
 
       <CardBody className="space-y-4">
-        {/* Mode Controls - only show if handlers are provided */}
         {(onDrawingModeChange || onAnalysisModeChange) && (
           <div className="space-y-3">
             <h4 className="text-sm font-medium text-foreground-600">
@@ -193,11 +192,10 @@ export default function DrawingPanel({
                       size="lg"
                       variant={selectedTool === tool.id ? "solid" : "flat"}
                       onPress={() => {
-                        // Toggle tool selection
                         if (selectedTool === tool.id) {
-                          onToolSelect(null); // Deselect if already selected
+                          onToolSelect(null);
                         } else {
-                          onToolSelect(tool.id); // Select tool
+                          onToolSelect(tool.id);
                         }
                       }}
                     >
@@ -212,7 +210,6 @@ export default function DrawingPanel({
               </div>
             </div>
 
-            {/* Active Tool Status */}
             {selectedTool && (
               <div className="p-3 rounded-lg bg-green-50 border border-green-200">
                 <div className="flex items-center gap-2 mb-2">
@@ -275,7 +272,6 @@ export default function DrawingPanel({
               </div>
             )}
 
-            {/* Quick Actions */}
             {!selectedTool && (
               <div className="p-4 rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200">
                 <div className="flex items-start gap-3">
@@ -301,7 +297,6 @@ export default function DrawingPanel({
                   </div>
                 </div>
 
-                {/* Debug button for testing */}
                 {process.env.NODE_ENV === "development" && (
                   <div className="mt-3 pt-2 border-t border-blue-200">
                     <Button
@@ -329,7 +324,6 @@ export default function DrawingPanel({
               </div>
             )}
 
-            {/* Clear Actions */}
             {(shapesCount > 0 ||
               (drawnShapesCount && drawnShapesCount > 0)) && (
               <>
@@ -347,7 +341,6 @@ export default function DrawingPanel({
               </>
             )}
 
-            {/* Save Button */}
             {onSaveShape && shapesCount > 0 && (
               <Button
                 className="w-full"

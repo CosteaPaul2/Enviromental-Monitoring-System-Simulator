@@ -15,7 +15,7 @@ router
   .group(() => {
     router.get('/me', '#controllers/auth_controller.me')
     router.post('/logout', '#controllers/auth_controller.logout')
-    
+
     // Sensor routes
     router.get('/sensors', '#controllers/sensor_controller.index')
     router.get('/sensors/historical', '#controllers/sensor_controller.getHistoricalSensors')
@@ -24,7 +24,7 @@ router
     router.post('/sensorLocation', '#controllers/sensor_controller.setSensorLocation')
     router.get('/sensors/:id/readings', '#controllers/sensor_controller.getReadings')
     router.get('/sensors/:id/latest', '#controllers/sensor_controller.getLatestReading')
-    
+
     // Shape routes
     router.get('/shapes', '#controllers/shape_controller.index')
     router.get('/shapes/geometry', '#controllers/shape_controller.indexWithGeometry')
@@ -35,11 +35,14 @@ router
     router.post('/shapes', '#controllers/shape_controller.store')
     router.put('/shapes/:id', '#controllers/shape_controller.update')
     router.delete('/shapes/:id', '#controllers/shape_controller.destroy')
-    
+
     // Spatial query routes
     router.get('/shapes/:id/sensors', '#controllers/shape_controller.getSensorsInShape')
-    router.get('/sensors/:sensorId/shapes', '#controllers/shape_controller.getShapesContainingSensor')
-    
+    router.get(
+      '/sensors/:sensorId/shapes',
+      '#controllers/shape_controller.getShapesContainingSensor'
+    )
+
     // Spatial analysis routes for client zones (temporary geometry operations)
     router.post('/analysis/zone', '#controllers/spatial_analysis_controller.analyzeClientZone')
   })
@@ -51,17 +54,17 @@ router
     // Dashboard
     router.get('/admin/dashboard/stats', '#controllers/admin_controller.getDashboardStats')
     router.get('/admin/analytics', '#controllers/admin_controller.getSystemAnalytics')
-    
+
     // User management
     router.get('/admin/users', '#controllers/admin_controller.getUsers')
     router.post('/admin/users', '#controllers/admin_controller.createUser')
     router.put('/admin/users/:id', '#controllers/admin_controller.updateUser')
     router.delete('/admin/users/:id', '#controllers/admin_controller.deleteUser')
-    
+
     // Sensor management
     router.get('/admin/sensors', '#controllers/admin_controller.getAllSensors')
     router.delete('/admin/sensors/:id', '#controllers/admin_controller.deleteSensor')
-    
+
     // Shape management
     router.get('/admin/shapes', '#controllers/admin_controller.getAllShapes')
     router.get('/admin/shapes/:id', '#controllers/admin_controller.getShapeDetails')

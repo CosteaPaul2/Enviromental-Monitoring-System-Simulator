@@ -14,10 +14,14 @@ import { Icon } from "@iconify/react";
 import { Input } from "@heroui/input";
 import { Select, SelectItem } from "@heroui/select";
 import { Pagination } from "@heroui/pagination";
-import { formatDistanceToNow } from 'date-fns'
-import AdminLayout from '@/layouts/AdminLayout'
-import { adminApi, AdminSensor } from '@/lib/adminApi'
-import { useSuccessNotification, useErrorNotification } from '@/contexts/NotificationContext'
+import { formatDistanceToNow } from "date-fns";
+
+import AdminLayout from "@/layouts/AdminLayout";
+import { adminApi, AdminSensor } from "@/lib/adminApi";
+import {
+  useSuccessNotification,
+  useErrorNotification,
+} from "@/contexts/NotificationContext";
 import { getSensorTypeInfo } from "@/lib/sensorsApi";
 
 export default function AdminSensorsPage() {
@@ -119,8 +123,8 @@ export default function AdminSensorsPage() {
           <Card>
             <CardBody className="text-center">
               <Icon
-                icon="tabler:device-analytics"
                 className="text-3xl text-primary mx-auto mb-2"
+                icon="tabler:device-analytics"
               />
               <div className="text-2xl font-bold">{sensors.length}</div>
               <div className="text-sm text-foreground/60">Total Sensors</div>
@@ -129,8 +133,8 @@ export default function AdminSensorsPage() {
           <Card>
             <CardBody className="text-center">
               <Icon
-                icon="tabler:activity"
                 className="text-3xl text-success mx-auto mb-2"
+                icon="tabler:activity"
               />
               <div className="text-2xl font-bold text-success">
                 {sensors.filter((s) => s.active).length}
@@ -141,8 +145,8 @@ export default function AdminSensorsPage() {
           <Card>
             <CardBody className="text-center">
               <Icon
-                icon="tabler:activity-off"
                 className="text-3xl text-danger mx-auto mb-2"
+                icon="tabler:activity-off"
               />
               <div className="text-2xl font-bold text-danger">
                 {sensors.filter((s) => !s.active).length}
@@ -153,8 +157,8 @@ export default function AdminSensorsPage() {
           <Card>
             <CardBody className="text-center">
               <Icon
-                icon="tabler:chart-line"
                 className="text-3xl text-warning mx-auto mb-2"
+                icon="tabler:chart-line"
               />
               <div className="text-2xl font-bold">
                 {sensors
@@ -179,19 +183,33 @@ export default function AdminSensorsPage() {
               />
               <Select
                 className="w-48"
-                items={[{ key: '', label: 'All Types' }, ...sensorTypes.map(type => ({ key: type, label: getSensorTypeInfo(type as any)?.label || type }))]}
+                items={[
+                  { key: "", label: "All Types" },
+                  ...sensorTypes.map((type) => ({
+                    key: type,
+                    label: getSensorTypeInfo(type as any)?.label || type,
+                  })),
+                ]}
                 placeholder="Filter by type"
                 selectedKeys={typeFilter ? [typeFilter] : []}
-                onSelectionChange={(value) => setTypeFilter(Array.from(value)[0] as string || '')}
+                onSelectionChange={(value) =>
+                  setTypeFilter((Array.from(value)[0] as string) || "")
+                }
               >
                 {(item) => <SelectItem key={item.key}>{item.label}</SelectItem>}
               </Select>
               <Select
                 className="w-48"
-                items={[{ key: '', label: 'All Status' }, { key: 'true', label: 'Active' }, { key: 'false', label: 'Inactive' }]}
+                items={[
+                  { key: "", label: "All Status" },
+                  { key: "true", label: "Active" },
+                  { key: "false", label: "Inactive" },
+                ]}
                 placeholder="Filter by status"
                 selectedKeys={activeFilter ? [activeFilter] : []}
-                onSelectionChange={(value) => setActiveFilter(Array.from(value)[0] as string || '')}
+                onSelectionChange={(value) =>
+                  setActiveFilter((Array.from(value)[0] as string) || "")
+                }
               >
                 {(item) => <SelectItem key={item.key}>{item.label}</SelectItem>}
               </Select>
@@ -232,9 +250,11 @@ export default function AdminSensorsPage() {
                             }}
                           >
                             <Icon
-                              className="text-lg" 
-                              icon={sensorInfo?.icon || 'tabler:device-analytics'}
-                              style={{ color: sensorInfo?.color || '#3388ff' }}
+                              className="text-lg"
+                              icon={
+                                sensorInfo?.icon || "tabler:device-analytics"
+                              }
+                              style={{ color: sensorInfo?.color || "#3388ff" }}
                             />
                           </div>
                           <div>
@@ -246,17 +266,21 @@ export default function AdminSensorsPage() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Chip color="primary" variant="flat" size="sm">
+                        <Chip color="primary" size="sm" variant="flat">
                           {sensorInfo?.label || sensor.type}
                         </Chip>
                       </TableCell>
                       <TableCell>
                         <Chip
-                          color={sensor.active ? 'success' : 'danger'}
+                          color={sensor.active ? "success" : "danger"}
                           size="sm"
                           startContent={
-                            <Icon 
-                              icon={sensor.active ? 'tabler:activity' : 'tabler:activity-off'} 
+                            <Icon
+                              icon={
+                                sensor.active
+                                  ? "tabler:activity"
+                                  : "tabler:activity-off"
+                              }
                             />
                           }
                           variant="flat"
@@ -271,7 +295,11 @@ export default function AdminSensorsPage() {
                             {sensor.user.email}
                           </p>
                           <Chip
-                            color={sensor.user.role === 'ADMIN' ? 'warning' : 'default'}
+                            color={
+                              sensor.user.role === "ADMIN"
+                                ? "warning"
+                                : "default"
+                            }
                             size="sm"
                             variant="flat"
                           >

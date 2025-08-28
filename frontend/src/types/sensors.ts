@@ -1,32 +1,101 @@
-export type SensorType =
-  | "TEMPERATURE"
-  | "HUMIDITY"
-  | "AIR_QUALITY"
-  | "LIGHT"
-  | "NOISE"
-  | "CO2";
+import {
+  BaseEntity,
+  Coordinates,
+  OptionalCoordinates,
+  Timestamp,
+  EntityStatus,
+  RequiredFields,
+  StrictOmit,
+} from "./common";
+
+export const SENSOR_TYPES = [
+  "TEMPERATURE",
+  "HUMIDITY",
+  "AIR_QUALITY",
+  "LIGHT",
+  "NOISE",
+  "CO2",
+] as const;
+export type SensorType = (typeof SENSOR_TYPES)[number];
 
 export interface SensorReading {
-  value: number;
-  unit: string;
-  timestamp: string;
+  readonly value: number;
+  readonly unit: string;
+  readonly timestamp: Timestamp;
+  readonly quality?: "good" | "fair" | "poor";
 }
 
-export interface Sensor {
-  id: string;
-  name: string;
-  type: SensorType;
-  active: boolean;
-  latitude?: number;
-  longitude?: number;
+export interface HistoricalSensorReading extends SensorReading {
+  readonly sensorId: string;
+  readonly interpolated: boolean;
+}
+
+interface BaseSensor extends BaseEntity {
+  readonly name: string;
+  readonly type: SensorType;
+  readonly status: EntityStatus;
+  readonly description?: string;
+  readonly batteryLevel?: number;
+}
+
+export interface SensorWithoutLocation extends BaseSensor {
+  readonly hasLocation: false;
+}
+
+export interface SensorWithLocation
+  extends BaseSensor,
+    RequiredFields<Coordinates, "latitude" | "longitude"> {
+  readonly hasLocation: true;
+}
+
+export type Sensor = SensorWithoutLocation | SensorWithLocation;
+
+export interface SensorFormData
+  extends StrictOmit<BaseSensor, "id" | "createdAt" | "updatedAt">,
+    OptionalCoordinates {
+  readonly sensorId?: string;
 }
 
 export interface SensorStats {
-  average: number;
-  minimum: number;
-  maximum: number;
-  trend: number;
+  readonly average: number;
+  readonly minimum: number;
+  readonly maximum: number;
+  readonly trend: number;
+  readonly sampleCount: number;
+  readonly timeRange: {
+    readonly start: Timestamp;
+    readonly end: Timestamp;
+  };
 }
+
+export interface LiveSensor extends SensorWithLocation {
+  readonly latestReading?: SensorReading;
+  readonly stats?: SensorStats;
+  readonly lastSeen: Timestamp;
+  readonly isOnline: boolean;
+}
+
+export const isSensorWithLocation = (
+  sensor: Sensor,
+): sensor is SensorWithLocation => {
+  return sensor.hasLocation;
+};
+
+export const isSensorOnline = (sensor: LiveSensor): boolean => {
+  const now = new Date();
+  const lastSeen = new Date(sensor.lastSeen);
+  const minutesOffline = (now.getTime() - lastSeen.getTime()) / (1000 * 60);
+
+  return minutesOffline < 5;
+};
+
+export type CreateSensorPayload = StrictOmit<SensorFormData, "status"> & {
+  readonly initialLocation?: Coordinates;
+};
+
+export type UpdateSensorPayload = Partial<
+  StrictOmit<CreateSensorPayload, "type">
+>;
 
 export const SENSOR_CONFIG = {
   TEMPERATURE: {

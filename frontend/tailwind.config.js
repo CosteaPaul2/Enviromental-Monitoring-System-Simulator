@@ -1,12 +1,12 @@
-import {heroui} from "@heroui/theme"
+import { heroui } from "@heroui/theme";
 
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
     "./index.html",
-    './src/layouts/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    "./src/layouts/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
@@ -22,7 +22,7 @@ export default {
             background: "#0a0a0a",
             foreground: "#f4f1f8",
             content1: "#1a1625",
-            content2: "#2d2838", 
+            content2: "#2d2838",
             content3: "#443d5a",
             content4: "#5a4d7a",
             divider: "#443d5a",
@@ -30,7 +30,7 @@ export default {
             overlay: "rgba(10,10,10,0.85)",
             default: {
               50: "#f4f1f8",
-              100: "#eae6f0", 
+              100: "#eae6f0",
               200: "#d1c9de",
               300: "#b8accc",
               400: "#9f8fba",
@@ -112,9 +112,9 @@ export default {
               DEFAULT: "#d64edd",
               foreground: "#000000",
             },
-          }
-        }
-      }
-    })
+          },
+        },
+      },
+    }),
   ],
-}
+};

@@ -25,6 +25,11 @@ const navigationItems = [
     href: "/map",
     icon: "tabler:map",
   },
+  {
+    label: "Analytics",
+    href: "/analytics",
+    icon: "tabler:chart-line",
+  },
 ];
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {

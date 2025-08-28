@@ -72,9 +72,8 @@ export default class AuthController {
       if (!user) {
         return response.status(401).json({ message: 'Invalid or expired token' })
       }
-      
-      return response.json({ user })
 
+      return response.json({ user })
     } catch (error) {
       return response.status(401).json({
         message: 'Unauthorized',

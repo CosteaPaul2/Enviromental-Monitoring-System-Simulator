@@ -1,9 +1,7 @@
-
 import SensorService from '#services/sensor_service'
 import SensorReadingService from '#services/sensor_reading_service'
 import { HttpContext } from '@adonisjs/core/http'
 import { SensorType } from '@prisma/client'
-
 
 export default class SensorController {
   async index({ request, response }: HttpContext) {
@@ -119,14 +117,14 @@ export default class SensorController {
       })
     } catch (error) {
       console.log('Failed to toggle sensor', error)
-      
+
       if (error.message && error.message.includes('not found')) {
         return response.status(404).json({
           success: false,
           message: 'Sensor not found for this user',
         })
       }
-      
+
       return response.status(500).json({
         success: false,
         message: 'Failed to toggle sensor',
@@ -160,7 +158,7 @@ export default class SensorController {
       if (!request.user) {
         return response.status(401).json({
           success: false,
-          message: 'Unauthorized access'
+          message: 'Unauthorized access',
         })
       }
 
@@ -169,23 +167,27 @@ export default class SensorController {
       if (!sensorId || latitude === undefined || longitude === undefined) {
         return response.status(400).json({
           success: false,
-          message: 'Missing required fields'
+          message: 'Missing required fields',
         })
       }
 
-      const result = await SensorService.setSensorLocation(sensorId, request.user.id, latitude, longitude)
+      const result = await SensorService.setSensorLocation(
+        sensorId,
+        request.user.id,
+        latitude,
+        longitude
+      )
 
       if (!result) {
         return response.status(400).json({
           success: false,
-          message: 'sensorId, userId, latitude and longitude are required fields'
+          message: 'sensorId, userId, latitude and longitude are required fields',
         })
       }
 
       return response.status(200).json({
-        success: true
+        success: true,
       })
-
     } catch (error) {
       return response.status(500).json({
         success: false,
@@ -212,7 +214,7 @@ export default class SensorController {
       }
 
       const sensorId = parseInt(sensorIdParam, 10)
-      
+
       if (isNaN(sensorId)) {
         return response.status(400).json({
           success: false,
@@ -266,7 +268,7 @@ export default class SensorController {
       }
 
       const sensorId = parseInt(sensorIdParam, 10)
-      
+
       if (isNaN(sensorId)) {
         return response.status(400).json({
           success: false,
@@ -305,7 +307,7 @@ export default class SensorController {
       if (!request.user) {
         return response.status(401).json({
           success: false,
-          message: 'Unauthorized access'
+          message: 'Unauthorized access',
         })
       }
 
@@ -314,7 +316,7 @@ export default class SensorController {
       if (!timestamp) {
         return response.status(400).json({
           success: false,
-          message: 'timestamp is required'
+          message: 'timestamp is required',
         })
       }
 
@@ -322,7 +324,7 @@ export default class SensorController {
       if (isNaN(targetDate.getTime())) {
         return response.status(400).json({
           success: false,
-          message: 'Invalid timestamp format'
+          message: 'Invalid timestamp format',
         })
       }
 
@@ -334,7 +336,7 @@ export default class SensorController {
           return {
             ...sensor,
             currentReading: closestReading,
-            historicalTimestamp: targetDate.toISOString()
+            historicalTimestamp: targetDate.toISOString(),
           }
         })
       )
@@ -344,14 +346,14 @@ export default class SensorController {
         data: {
           sensors: sensorsWithReadings,
           timestamp: targetDate.toISOString(),
-          count: sensorsWithReadings.length
-        }
+          count: sensorsWithReadings.length,
+        },
       })
     } catch (error) {
       return response.status(500).json({
         success: false,
         message: 'Failed to fetch historical sensors',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       })
     }
   }

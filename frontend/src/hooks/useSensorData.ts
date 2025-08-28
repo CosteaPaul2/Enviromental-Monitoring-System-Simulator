@@ -24,17 +24,15 @@ export function useSensorData({
     null,
   );
 
-  // Fetch historical data
   const { data: historicalData, isLoading } = useQuery({
     queryKey: ["sensor-data", sensorId, timeRange],
     queryFn: () =>
       fetch(`/api/sensors/${sensorId}/readings?timeRange=${timeRange}`).then(
         (res) => res.json(),
       ),
-    refetchInterval: 60000, // Refetch every minute
+    refetchInterval: 60000,
   });
 
-  // Subscribe to real-time updates
   useEffect(() => {
     const ws = new WebSocket(`ws://localhost:3000/ws/sensors/${sensorId}`);
 
@@ -47,7 +45,6 @@ export function useSensorData({
     return () => ws.close();
   }, [sensorId]);
 
-  // Calculate statistics and trends
   const stats = useMemo(() => {
     if (!historicalData || !historicalData.readings) return null;
 
@@ -59,7 +56,6 @@ export function useSensorData({
     const min = Math.min(...values);
     const max = Math.max(...values);
 
-    // Calculate trend (positive or negative)
     const recentValues = values.slice(-5);
     const trend = recentValues[recentValues.length - 1] - recentValues[0];
 
@@ -71,7 +67,6 @@ export function useSensorData({
     };
   }, [historicalData]);
 
-  // Get appropriate color based on sensor type and value
   const getValueColor = (value: number) => {
     switch (type) {
       case "AIR_QUALITY":
@@ -85,7 +80,6 @@ export function useSensorData({
     }
   };
 
-  // Format value based on sensor type
   const formatValue = (value: number) => {
     switch (type) {
       case "TEMPERATURE":

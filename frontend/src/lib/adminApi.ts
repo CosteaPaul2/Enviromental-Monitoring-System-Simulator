@@ -19,7 +19,6 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Types
 export interface AdminDashboardStats {
   overview: {
     totalUsers: number;
@@ -149,7 +148,6 @@ export interface PaginatedShapesResponse {
 }
 
 export const adminApi = {
-  // Dashboard
   getDashboardStats: async (): Promise<{
     success: boolean;
     data?: AdminDashboardStats;
@@ -165,7 +163,6 @@ export const adminApi = {
     return response.data;
   },
 
-  // User Management
   getUsers: async (
     params: {
       page?: number;
@@ -209,7 +206,6 @@ export const adminApi = {
     return response.data;
   },
 
-  // Sensor Management
   getAllSensors: async (
     params: {
       page?: number;
@@ -230,7 +226,6 @@ export const adminApi = {
     return response.data;
   },
 
-  // Shape Management
   getAllShapes: async (
     params: {
       page?: number;

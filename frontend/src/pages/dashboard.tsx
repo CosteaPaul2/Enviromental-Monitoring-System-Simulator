@@ -96,7 +96,7 @@ export default function DashboardPage(): React.JSX.Element {
     refreshInterval: 60000,
     notificationThreshold: "high",
     maxAlertsDisplayed: 6,
-    alertCacheDuration: 300000, // 5 minute cache
+    alertCacheDuration: 300000,
   });
 
   useEffect(() => {
@@ -117,7 +117,6 @@ export default function DashboardPage(): React.JSX.Element {
     fetchSensors();
   }, []);
 
-  // Convert pollution alerts to dashboard format
   const recentAlerts: RealTimeAlert[] = getRecentAlerts(6).map((alert) => ({
     id: alert.id,
     area: alert.area,
@@ -130,7 +129,6 @@ export default function DashboardPage(): React.JSX.Element {
     activeSensorCount: alert.activeSensorCount,
   }));
 
-  // Calculate stats from real data
   const activeSensors = sensors.filter((s) => s.active).length;
   const totalSensors = sensors.length;
   const loading = sensorsLoading || pollutionLoading;
@@ -174,7 +172,6 @@ export default function DashboardPage(): React.JSX.Element {
   const handleRefreshData = async () => {
     try {
       await refreshData();
-      // Only show refresh notification when manually triggered
       addSuccessNotification("Data Refreshed", "Environmental data updated", {
         duration: 2000,
       });
@@ -187,7 +184,6 @@ export default function DashboardPage(): React.JSX.Element {
     }
   };
 
-  // Calculate sensor health from real data
   const sensorHealth = [
     "TEMPERATURE",
     "AIR_QUALITY",
@@ -213,7 +209,7 @@ export default function DashboardPage(): React.JSX.Element {
         total: typeSensors.length,
       };
     })
-    .filter((item) => item.total > 0); // Only show sensor types that exist
+    .filter((item) => item.total > 0);
 
   const formatAlertLevel = (alertLevel: string) => {
     switch (alertLevel) {
@@ -232,7 +228,6 @@ export default function DashboardPage(): React.JSX.Element {
 
   return (
     <DashboardLayout>
-      {/* Stats Overview */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">Environmental Overview</h2>
         <div className="flex items-center gap-4">
@@ -302,7 +297,6 @@ export default function DashboardPage(): React.JSX.Element {
         ))}
       </div>
 
-      {/* Pollution Status Banner */}
       {pollutionStats.criticalAlerts > 0 && (
         <Card className="border-none mb-6 bg-danger/10 border-danger/20">
           <CardBody>
@@ -339,7 +333,6 @@ export default function DashboardPage(): React.JSX.Element {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Alerts */}
         <Card className="border-none">
           <CardHeader className="flex justify-between">
             <div>
@@ -454,7 +447,6 @@ export default function DashboardPage(): React.JSX.Element {
           </CardBody>
         </Card>
 
-        {/* Sensor Health */}
         <Card className="border-none">
           <CardHeader className="flex justify-between">
             <h3 className="text-lg font-semibold">Sensor Health</h3>
@@ -534,7 +526,6 @@ export default function DashboardPage(): React.JSX.Element {
         </Card>
       </div>
 
-      {/* Quick Actions */}
       <div className="mt-6">
         <Card className="border-none">
           <CardHeader>
@@ -569,7 +560,7 @@ export default function DashboardPage(): React.JSX.Element {
                 startContent={
                   <Icon className="text-xl" icon="tabler:chart-line" />
                 }
-                to="/sensors"
+                to="/analytics"
               >
                 View Analytics
               </Button>

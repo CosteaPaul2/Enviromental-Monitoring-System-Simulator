@@ -93,11 +93,7 @@ export default class SensorReadingService {
       await prismaService.ensureConnection()
 
       if (startDate && endDate) {
-        return this.getReadingsInRange(
-          sensorId,
-          new Date(startDate),
-          new Date(endDate)
-        )
+        return this.getReadingsInRange(sensorId, new Date(startDate), new Date(endDate))
       }
 
       return this.getReadingsBySensorId(sensorId, limit)
@@ -131,7 +127,10 @@ export default class SensorReadingService {
     }
   }
 
-  static async getClosestReading(sensorId: number, targetDate: Date): Promise<SensorReadingResponse | null> {
+  static async getClosestReading(
+    sensorId: number,
+    targetDate: Date
+  ): Promise<SensorReadingResponse | null> {
     try {
       await prismaService.ensureConnection()
 
@@ -139,15 +138,15 @@ export default class SensorReadingService {
         where: {
           sensorId,
           timestamp: {
-            gte: new Date(targetDate.getTime() - 24 * 60 * 60 * 1000), 
+            gte: new Date(targetDate.getTime() - 24 * 60 * 60 * 1000),
             lte: new Date(targetDate.getTime() + 24 * 60 * 60 * 1000),
           },
         },
         orderBy: [
           {
-            timestamp: 'desc'
-          }
-        ]
+            timestamp: 'desc',
+          },
+        ],
       })
 
       if (!reading) {
@@ -155,14 +154,14 @@ export default class SensorReadingService {
           where: {
             sensorId,
             timestamp: {
-              lte: targetDate
-            }
+              lte: targetDate,
+            },
           },
           orderBy: {
-            timestamp: 'desc'
-          }
+            timestamp: 'desc',
+          },
         })
-        
+
         return closestReading
       }
 

@@ -38,7 +38,7 @@ export const usePollutionMonitor = (
     refreshInterval = 30000,
     notificationThreshold = "medium",
     maxAlertsDisplayed = 8,
-    alertCacheDuration = 300000, // 5 minutes
+    alertCacheDuration = 300000,
   } = options;
 
   const [loading, setLoading] = useState(true);
@@ -59,7 +59,6 @@ export const usePollutionMonitor = (
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
   const [previousAlerts] = useState<string[]>([]);
 
-  // Cache for alerts to reduce spam
   const alertCache = useRef<
     Map<string, { alert: PollutionAlert; timestamp: number }>
   >(new Map());
@@ -69,28 +68,21 @@ export const usePollutionMonitor = (
   const addPollutionNotification = usePollutionNotification();
   const pollutionService = PollutionMonitorService.getInstance();
 
-  // Helper to filter and cache alerts intelligently
   const filterAndCacheAlerts = useCallback(
     (newAlerts: PollutionAlert[]): PollutionAlert[] => {
       const now = Date.now();
       const filteredAlerts: PollutionAlert[] = [];
 
-      // Clean expired alerts from cache
       for (const [key, cached] of alertCache.current.entries()) {
         if (now - cached.timestamp > alertCacheDuration) {
           alertCache.current.delete(key);
         }
       }
 
-      // Process new alerts
       for (const alert of newAlerts) {
         const alertKey = `${alert.shapeId}-${alert.alertLevel}-${alert.level}`;
         const cached = alertCache.current.get(alertKey);
 
-        // Only show alert if:
-        // 1. It's new (not in cache)
-        // 2. Or it's a critical/high alert (always show)
-        // 3. Or cached version is significantly different (risk score changed by >20)
         const isNewAlert = !cached;
         const isCritical =
           alert.alertLevel === "critical" || alert.alertLevel === "high";
@@ -98,19 +90,15 @@ export const usePollutionMonitor = (
           cached && Math.abs(alert.riskScore - cached.alert.riskScore) > 20;
 
         if (isNewAlert || isCritical || hasSignificantChange) {
-          // Cache the alert
           alertCache.current.set(alertKey, { alert, timestamp: now });
           filteredAlerts.push(alert);
         } else if (cached) {
-          // Use cached version to maintain consistency
           filteredAlerts.push(cached.alert);
         }
       }
 
-      // Sort by priority and timestamp, limit to maxAlertsDisplayed
       return filteredAlerts
         .sort((a, b) => {
-          // Priority order: critical > high > medium > low
           const priorityOrder = {
             critical: 4,
             high: 3,
@@ -123,7 +111,6 @@ export const usePollutionMonitor = (
 
           if (aPriority !== bPriority) return bPriority - aPriority;
 
-          // If same priority, sort by timestamp (newer first)
           return (
             new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
           );
@@ -137,44 +124,35 @@ export const usePollutionMonitor = (
     try {
       setError(null);
 
-      // Fetch shapes with pollution data
       const shapesData = await pollutionService.fetchPollutionData();
 
       setShapes(shapesData);
 
-      // Generate basic alerts and get detailed alerts
       const detailedAlerts = await pollutionService.getDetailedAlerts();
 
-      // Apply intelligent filtering and caching
       const filteredAlerts = filterAndCacheAlerts(detailedAlerts);
 
       setAlerts(filteredAlerts);
 
-      // Generate stats
       const newStats = pollutionService.generateStats(shapesData);
 
       setStats(newStats);
 
-      // Update last update time
       setLastUpdate(new Date());
 
-      // Handle notifications for new alerts if enabled (with intelligent throttling)
       if (enableNotifications) {
         const now = Date.now();
-        const minNotificationInterval = 120000; // 2 minutes minimum between notifications for same area
+        const minNotificationInterval = 120000;
 
         const alertsToNotify = filteredAlerts.filter((alert) => {
           const alertId = `${alert.shapeId}-${alert.alertLevel}`;
           const notificationKey = `${alert.shapeId}-notification`;
 
-          // Check if we've already notified about this alert recently
           const lastNotification =
             lastNotificationTime.current.get(notificationKey);
           const tooSoon =
             lastNotification &&
             now - lastNotification < minNotificationInterval;
-
-          // Only notify for critical/high alerts or first-time medium alerts
           const shouldNotify = shouldNotifyForAlert(
             alert.alertLevel,
             notificationThreshold,
@@ -186,7 +164,6 @@ export const usePollutionMonitor = (
           return shouldNotify && !tooSoon && (isFirstTime || isCritical);
         });
 
-        // Send notifications for qualified alerts
         alertsToNotify.forEach((alert) => {
           const alertId = `${alert.shapeId}-${alert.alertLevel}`;
           const notificationKey = `${alert.shapeId}-notification`;
@@ -201,7 +178,6 @@ export const usePollutionMonitor = (
             duration: alert.alertLevel === "critical" ? 0 : 8000,
           });
 
-          // Update notification tracking
           notificationCache.current.add(alertId);
           lastNotificationTime.current.set(notificationKey, now);
         });
@@ -221,7 +197,6 @@ export const usePollutionMonitor = (
     previousAlerts,
   ]);
 
-  // Helper function to determine if we should notify for an alert level
   const shouldNotifyForAlert = (
     alertLevel: string,
     threshold: string,
@@ -230,15 +205,12 @@ export const usePollutionMonitor = (
     const alertLevelIndex = levels.indexOf(alertLevel);
     const thresholdIndex = levels.indexOf(threshold);
 
-    // Only notify for high priority alerts (high/critical) regardless of threshold
-    // This prevents notification spam for moderate pollution levels
     return (
       alertLevelIndex >= thresholdIndex &&
       (alertLevel === "high" || alertLevel === "critical")
     );
   };
 
-  // Filter functions
   const getAlertsByLevel = useCallback(
     (level: PollutionAlert["alertLevel"]) => {
       return alerts.filter((alert) => alert.alertLevel === level);
@@ -264,7 +236,6 @@ export const usePollutionMonitor = (
     [alerts],
   );
 
-  // Initial load and auto-refresh setup
   useEffect(() => {
     refreshData();
 
@@ -275,7 +246,6 @@ export const usePollutionMonitor = (
     }
   }, [refreshData, autoRefresh, refreshInterval]);
 
-  // Start/stop monitoring service
   useEffect(() => {
     if (autoRefresh) {
       pollutionService.startMonitoring(refreshInterval);

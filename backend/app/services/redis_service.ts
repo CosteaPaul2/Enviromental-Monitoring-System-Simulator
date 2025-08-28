@@ -83,6 +83,4 @@ export default class RedisService {
       return false
     }
   }
-
-
 }

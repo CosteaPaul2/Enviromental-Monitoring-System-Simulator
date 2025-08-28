@@ -9,7 +9,6 @@ import { AppUpdateProvider } from "@/contexts/AppUpdateContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { HistoricalDataProvider } from "@/contexts/HistoricalDataContext";
 
-// Import global styles
 import "@/styles/globals.css";
 
 declare module "@react-types/shared" {
@@ -22,14 +21,11 @@ const THEME_STORAGE_KEY = "environmental-monitoring-theme";
 
 function ThemeInitializer() {
   useEffect(() => {
-    // Initialize theme on app load
     const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || "dark";
 
-    // Apply theme to document immediately
     document.documentElement.classList.remove("light", "dark");
     document.documentElement.classList.add(savedTheme);
 
-    // Set data attribute for CSS targeting
     document.documentElement.setAttribute("data-theme", savedTheme);
   }, []);
 

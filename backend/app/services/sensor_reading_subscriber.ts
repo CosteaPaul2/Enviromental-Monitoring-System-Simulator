@@ -69,8 +69,7 @@ export default class SensorReadingSubscriber {
       })
 
       if (reading) {
-        console.log(` Saved reading for sensor ${event.sensorId}: ${event.value} ${event.unit}`
-        )
+        console.log(` Saved reading for sensor ${event.sensorId}: ${event.value} ${event.unit}`)
       }
     } catch (error) {
       console.log('Error processing sensor reading:', error)

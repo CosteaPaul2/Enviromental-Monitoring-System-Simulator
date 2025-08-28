@@ -36,63 +36,68 @@ export default class PollutionAnalysisService {
       good: { min: 18, max: 26 },
       moderate: { min: 15, max: 30 },
       unhealthy: { min: 10, max: 35 },
-      dangerous: { min: -10, max: 45 }
+      dangerous: { min: -10, max: 45 },
     },
     HUMIDITY: {
       good: { min: 40, max: 60 },
       moderate: { min: 30, max: 70 },
       unhealthy: { min: 20, max: 80 },
-      dangerous: { min: 0, max: 100 }
+      dangerous: { min: 0, max: 100 },
     },
     AIR_QUALITY: {
-      good: { min: 0, max: 50 }, 
-      moderate: { min: 51, max: 100 }, 
-      unhealthy: { min: 101, max: 200 }, 
-      dangerous: { min: 201, max: 1000 } 
+      good: { min: 0, max: 50 },
+      moderate: { min: 51, max: 100 },
+      unhealthy: { min: 101, max: 200 },
+      dangerous: { min: 201, max: 1000 },
     },
     CO2: {
-      good: { min: 350, max: 1000 }, 
+      good: { min: 350, max: 1000 },
       moderate: { min: 1001, max: 2000 },
-      unhealthy: { min: 2001, max: 5000 }, 
-      dangerous: { min: 5001, max: 50000 } 
+      unhealthy: { min: 2001, max: 5000 },
+      dangerous: { min: 5001, max: 50000 },
     },
     NOISE: {
-      good: { min: 0, max: 55 }, 
-      moderate: { min: 56, max: 70 }, 
-      unhealthy: { min: 71, max: 85 }, 
-      dangerous: { min: 86, max: 140 } 
+      good: { min: 0, max: 55 },
+      moderate: { min: 56, max: 70 },
+      unhealthy: { min: 71, max: 85 },
+      dangerous: { min: 86, max: 140 },
     },
     LIGHT: {
-      good: { min: 200, max: 1000 },     
-      moderate: { min: 100, max: 2000 }, 
-      unhealthy: { min: 50, max: 5000 }, 
-      dangerous: { min: 0, max: 100000 } 
-    }
+      good: { min: 200, max: 1000 },
+      moderate: { min: 100, max: 2000 },
+      unhealthy: { min: 50, max: 5000 },
+      dangerous: { min: 0, max: 100000 },
+    },
   }
 
-  static async analyzeSensorPollution(sensorId: number, sensorType: SensorType, active: boolean, sensorName?: string): Promise<SensorPollutionData> {
+  static async analyzeSensorPollution(
+    sensorId: number,
+    sensorType: SensorType,
+    active: boolean,
+    sensorName?: string
+  ): Promise<SensorPollutionData> {
     try {
       const displayName = sensorName || `Sensor ${sensorId}`
-      
+
       if (!active) {
         return {
           sensorId,
           sensorName: displayName,
           type: sensorType,
           pollutionLevel: 'no-data',
-          active: false
+          active: false,
         }
       }
 
       const latestReading = await SensorReadingService.getLatestReading(sensorId)
-      
+
       if (!latestReading) {
         return {
           sensorId,
           sensorName: displayName,
           type: sensorType,
           pollutionLevel: 'no-data',
-          active: true
+          active: true,
         }
       }
 
@@ -106,7 +111,7 @@ export default class PollutionAnalysisService {
         unit: latestReading.unit,
         pollutionLevel,
         timestamp: new Date(latestReading.timestamp),
-        active: true
+        active: true,
       }
     } catch (error) {
       console.error(`Error analyzing sensor pollution for sensor ${sensorId}:`, error)
@@ -115,14 +120,17 @@ export default class PollutionAnalysisService {
         sensorName: sensorName || `Sensor ${sensorId}`,
         type: sensorType,
         pollutionLevel: 'no-data',
-        active: false
+        active: false,
       }
     }
   }
 
-  static calculatePollutionLevel(sensorType: SensorType, value: number): 'good' | 'moderate' | 'unhealthy' | 'dangerous' {
+  static calculatePollutionLevel(
+    sensorType: SensorType,
+    value: number
+  ): 'good' | 'moderate' | 'unhealthy' | 'dangerous' {
     const thresholds = this.POLLUTION_THRESHOLDS[sensorType]
-    
+
     if (value >= thresholds.good.min && value <= thresholds.good.max) {
       return 'good'
     } else if (value >= thresholds.moderate.min && value <= thresholds.moderate.max) {
@@ -134,26 +142,30 @@ export default class PollutionAnalysisService {
     }
   }
 
-  static async analyzeShapePollution(shapeId: number, shapeName: string, sensorsInShape: any[]): Promise<ShapePollutionAnalysis> {
+  static async analyzeShapePollution(
+    shapeId: number,
+    shapeName: string,
+    sensorsInShape: any[]
+  ): Promise<ShapePollutionAnalysis> {
     const sensorAnalyses: SensorPollutionData[] = []
-    
+
     for (const sensor of sensorsInShape) {
       const analysis = await this.analyzeSensorPollution(
-        sensor.id || sensor.sensorId, 
+        sensor.id || sensor.sensorId,
         sensor.type || SensorType.AIR_QUALITY,
         sensor.active !== false,
-        sensor.sensorId 
+        sensor.sensorId
       )
       sensorAnalyses.push(analysis)
     }
 
     const overallLevel = this.calculateOverallPollutionLevel(sensorAnalyses)
-    
+
     const pollutionFactors = this.identifyPollutionFactors(sensorAnalyses)
     const recommendations = this.generateRecommendations(sensorAnalyses, overallLevel)
-    
+
     const riskScore = this.calculateRiskScore(sensorAnalyses)
-    
+
     const alertLevel = this.determineAlertLevel(overallLevel, riskScore)
 
     return {
@@ -164,46 +176,47 @@ export default class PollutionAnalysisService {
       pollutionFactors,
       riskScore,
       recommendations,
-      alertLevel
+      alertLevel,
     }
   }
 
-  static calculateOverallPollutionLevel(sensors: SensorPollutionData[]): 'good' | 'moderate' | 'unhealthy' | 'dangerous' | 'no-data' {
-    const activeSensors = sensors.filter(s => s.active && s.pollutionLevel !== 'no-data')
-    
+  static calculateOverallPollutionLevel(
+    sensors: SensorPollutionData[]
+  ): 'good' | 'moderate' | 'unhealthy' | 'dangerous' | 'no-data' {
+    const activeSensors = sensors.filter((s) => s.active && s.pollutionLevel !== 'no-data')
+
     if (activeSensors.length === 0) {
       return 'no-data'
     }
 
     const levelCounts = {
-      dangerous: activeSensors.filter(s => s.pollutionLevel === 'dangerous').length,
-      unhealthy: activeSensors.filter(s => s.pollutionLevel === 'unhealthy').length,
-      moderate: activeSensors.filter(s => s.pollutionLevel === 'moderate').length,
-      good: activeSensors.filter(s => s.pollutionLevel === 'good').length
+      dangerous: activeSensors.filter((s) => s.pollutionLevel === 'dangerous').length,
+      unhealthy: activeSensors.filter((s) => s.pollutionLevel === 'unhealthy').length,
+      moderate: activeSensors.filter((s) => s.pollutionLevel === 'moderate').length,
+      good: activeSensors.filter((s) => s.pollutionLevel === 'good').length,
     }
 
     const totalSensors = activeSensors.length
-    
 
     const dangerousPercent = (levelCounts.dangerous / totalSensors) * 100
     const unhealthyPercent = (levelCounts.unhealthy / totalSensors) * 100
     const moderatePercent = (levelCounts.moderate / totalSensors) * 100
     const goodPercent = (levelCounts.good / totalSensors) * 100
-    
+
     const problemPercent = dangerousPercent + unhealthyPercent
     if (dangerousPercent >= 50 || problemPercent >= 80) {
       return 'dangerous'
     }
-    
+
     if (dangerousPercent >= 25 || problemPercent >= 50) {
       return 'unhealthy'
     }
- 
+
     const concernPercent = dangerousPercent + unhealthyPercent + moderatePercent
     if (dangerousPercent > 0 || unhealthyPercent >= 25 || concernPercent >= 50) {
       return 'moderate'
     }
-    
+
     if (goodPercent >= 70) {
       return 'good'
     }
@@ -213,8 +226,8 @@ export default class PollutionAnalysisService {
 
   static identifyPollutionFactors(sensors: SensorPollutionData[]): string[] {
     const factors: string[] = []
-    
-    sensors.forEach(sensor => {
+
+    sensors.forEach((sensor) => {
       if (sensor.pollutionLevel === 'dangerous' || sensor.pollutionLevel === 'unhealthy') {
         switch (sensor.type) {
           case SensorType.CO2:
@@ -256,7 +269,7 @@ export default class PollutionAnalysisService {
 
   static generateRecommendations(sensors: SensorPollutionData[], overallLevel: string): string[] {
     const recommendations: string[] = []
-    
+
     switch (overallLevel) {
       case 'dangerous':
         recommendations.push('⚠️ Immediate evacuation recommended')
@@ -276,8 +289,8 @@ export default class PollutionAnalysisService {
       default:
         recommendations.push('Install more sensors for better monitoring')
     }
- 
-    sensors.forEach(sensor => {
+
+    sensors.forEach((sensor) => {
       if (sensor.pollutionLevel === 'dangerous' || sensor.pollutionLevel === 'unhealthy') {
         switch (sensor.type) {
           case SensorType.CO2:
@@ -303,44 +316,47 @@ export default class PollutionAnalysisService {
       }
     })
 
-    return [...new Set(recommendations)] 
+    return [...new Set(recommendations)]
   }
 
   static calculateRiskScore(sensors: SensorPollutionData[]): number {
     if (sensors.length === 0) return 0
 
-    const activeSensors = sensors.filter(s => s.active && s.pollutionLevel !== 'no-data')
+    const activeSensors = sensors.filter((s) => s.active && s.pollutionLevel !== 'no-data')
     if (activeSensors.length === 0) return 0
 
     const baseScores = {
-      'good': 5,
-      'moderate': 35,
-      'unhealthy': 70,
-      'dangerous': 95
+      good: 5,
+      moderate: 35,
+      unhealthy: 70,
+      dangerous: 95,
     }
 
     let weightedScore = 0
     let totalWeight = 0
 
-    const sensorsByType = activeSensors.reduce((acc, sensor) => {
-      const sensorType = sensor.type as keyof typeof acc
-      if (!acc[sensorType]) acc[sensorType] = []
-      acc[sensorType].push(sensor)
-      return acc
-    }, {} as Record<SensorType, SensorPollutionData[]>)
+    const sensorsByType = activeSensors.reduce(
+      (acc, sensor) => {
+        const sensorType = sensor.type as keyof typeof acc
+        if (!acc[sensorType]) acc[sensorType] = []
+        acc[sensorType].push(sensor)
+        return acc
+      },
+      {} as Record<SensorType, SensorPollutionData[]>
+    )
 
     Object.entries(sensorsByType).forEach(([type, typeSensors]) => {
       const sensorType = type as SensorType
-      
+
       let worstLevel: keyof typeof baseScores = 'good'
       let highestScore = 0
-      
-      typeSensors.forEach(sensor => {
+
+      typeSensors.forEach((sensor) => {
         if (sensor.pollutionLevel === 'no-data') return
-        
+
         const sensorLevel = sensor.pollutionLevel as keyof typeof baseScores
         const currentScore = baseScores[sensorLevel]
-        
+
         if (currentScore > highestScore) {
           highestScore = currentScore
           worstLevel = sensorLevel
@@ -348,101 +364,119 @@ export default class PollutionAnalysisService {
       })
 
       const typeScore = baseScores[worstLevel]
-      
+
       let typeWeight = 1.0
       switch (sensorType) {
         case SensorType.AIR_QUALITY:
         case SensorType.CO2:
-          typeWeight = 1.5 
+          typeWeight = 1.5
           break
         case SensorType.NOISE:
         case SensorType.TEMPERATURE:
-          typeWeight = 1.2 
+          typeWeight = 1.2
           break
         case SensorType.HUMIDITY:
         case SensorType.LIGHT:
-          typeWeight = 1.0 
+          typeWeight = 1.0
           break
       }
-      
-      const problemSensorsCount = typeSensors.filter(s => 
-        s.pollutionLevel === 'unhealthy' || s.pollutionLevel === 'dangerous'
+
+      const problemSensorsCount = typeSensors.filter(
+        (s) => s.pollutionLevel === 'unhealthy' || s.pollutionLevel === 'dangerous'
       ).length
-      
+
       if (problemSensorsCount > 1) {
-        typeWeight *= 1.2  
+        typeWeight *= 1.2
       }
-      
+
       weightedScore += typeScore * typeWeight
       totalWeight += typeWeight
     })
 
     const averageScore = totalWeight > 0 ? weightedScore / totalWeight : 0
-    
+
     const sensorTypeCount = Object.keys(sensorsByType).length
     let diversityMultiplier = 1.0
-    
-    if (sensorTypeCount >= 4) {  
+
+    if (sensorTypeCount >= 4) {
       const problemTypes = Object.entries(sensorsByType).filter(([, sensors]) =>
-        sensors.some(s => s.pollutionLevel === 'unhealthy' || s.pollutionLevel === 'dangerous')
+        sensors.some((s) => s.pollutionLevel === 'unhealthy' || s.pollutionLevel === 'dangerous')
       ).length
-      
+
       if (problemTypes < sensorTypeCount * 0.5) {
-        diversityMultiplier = 0.9 
+        diversityMultiplier = 0.9
       }
     } else if (sensorTypeCount <= 2) {
       diversityMultiplier = 1.1
     }
 
     const finalScore = Math.round(averageScore * diversityMultiplier)
-    
+
     return Math.max(0, Math.min(100, finalScore))
   }
 
-  static determineAlertLevel(overallLevel: string, riskScore: number): 'none' | 'low' | 'medium' | 'high' | 'critical' {
-  
-    if (riskScore >= 90) return 'critical'   
-    if (riskScore >= 80) return 'high'  
-    if (riskScore >= 60) return 'medium'     
-    if (riskScore >= 35) return 'low'     
-    
+  static determineAlertLevel(
+    overallLevel: string,
+    riskScore: number
+  ): 'none' | 'low' | 'medium' | 'high' | 'critical' {
+    if (riskScore >= 90) return 'critical'
+    if (riskScore >= 80) return 'high'
+    if (riskScore >= 60) return 'medium'
+    if (riskScore >= 35) return 'low'
+
     switch (overallLevel) {
       case 'dangerous':
         return riskScore >= 70 ? 'critical' : 'high'
-        
+
       case 'unhealthy':
         return riskScore >= 50 ? (riskScore >= 80 ? 'critical' : 'high') : 'medium'
-        
+
       case 'moderate':
         return riskScore >= 60 ? 'medium' : 'low'
-        
+
       case 'good':
         return riskScore >= 40 ? 'low' : 'none'
-        
+
       default:
         return 'none'
     }
   }
 
-  static getPollutionColor(level: 'good' | 'moderate' | 'unhealthy' | 'dangerous' | 'no-data'): string {
+  static getPollutionColor(
+    level: 'good' | 'moderate' | 'unhealthy' | 'dangerous' | 'no-data'
+  ): string {
     switch (level) {
-      case 'good': return '#22c55e' 
-      case 'moderate': return '#f59e0b' 
-      case 'unhealthy': return '#ef4444'
-      case 'dangerous': return '#7c2d12' 
-      case 'no-data': return '#6b7280'  
-      default: return '#6b7280'
+      case 'good':
+        return '#22c55e'
+      case 'moderate':
+        return '#f59e0b'
+      case 'unhealthy':
+        return '#ef4444'
+      case 'dangerous':
+        return '#7c2d12'
+      case 'no-data':
+        return '#6b7280'
+      default:
+        return '#6b7280'
     }
   }
 
-  static getPollutionIcon(level: 'good' | 'moderate' | 'unhealthy' | 'dangerous' | 'no-data'): string {
+  static getPollutionIcon(
+    level: 'good' | 'moderate' | 'unhealthy' | 'dangerous' | 'no-data'
+  ): string {
     switch (level) {
-      case 'good': return 'solar:shield-check-bold'
-      case 'moderate': return 'solar:shield-warning-bold'
-      case 'unhealthy': return 'solar:shield-cross-bold'
-      case 'dangerous': return 'solar:danger-triangle-bold'
-      case 'no-data': return 'solar:question-circle-bold'
-      default: return 'solar:question-circle-bold'
+      case 'good':
+        return 'solar:shield-check-bold'
+      case 'moderate':
+        return 'solar:shield-warning-bold'
+      case 'unhealthy':
+        return 'solar:shield-cross-bold'
+      case 'dangerous':
+        return 'solar:danger-triangle-bold'
+      case 'no-data':
+        return 'solar:question-circle-bold'
+      default:
+        return 'solar:question-circle-bold'
     }
   }
 
@@ -452,9 +486,11 @@ export default class PollutionAnalysisService {
     sensors: any[],
     targetDate: Date
   ): Promise<ShapePollutionAnalysis> {
-    console.log(`🔍 Analyzing historical pollution for shape "${shapeName}" at ${targetDate.toISOString()}`)
+    console.log(
+      `🔍 Analyzing historical pollution for shape "${shapeName}" at ${targetDate.toISOString()}`
+    )
 
-    const sensorPollutionData: SensorPollutionData[] = sensors.map(sensor => {
+    const sensorPollutionData: SensorPollutionData[] = sensors.map((sensor) => {
       let pollutionLevel: 'good' | 'moderate' | 'unhealthy' | 'dangerous' | 'no-data' = 'no-data'
       let latestValue: number | undefined
       let unit: SensorUnit | undefined
@@ -465,7 +501,7 @@ export default class PollutionAnalysisService {
         latestValue = readingValue
         unit = sensor.currentReading.unit
         timestamp = new Date(sensor.currentReading.timestamp)
-        
+
         pollutionLevel = PollutionAnalysisService.calculatePollutionLevel(sensor.type, readingValue)
       }
 
@@ -477,17 +513,26 @@ export default class PollutionAnalysisService {
         unit,
         pollutionLevel,
         timestamp,
-        active: sensor.active
+        active: sensor.active,
       }
     })
 
-    const overallPollutionLevel = PollutionAnalysisService.calculateOverallPollutionLevel(sensorPollutionData)
+    const overallPollutionLevel =
+      PollutionAnalysisService.calculateOverallPollutionLevel(sensorPollutionData)
     const pollutionFactors = PollutionAnalysisService.identifyPollutionFactors(sensorPollutionData)
     const riskScore = PollutionAnalysisService.calculateRiskScore(sensorPollutionData)
-    const recommendations = PollutionAnalysisService.generateRecommendations(sensorPollutionData, overallPollutionLevel)
-    const alertLevel = PollutionAnalysisService.determineAlertLevel(overallPollutionLevel, riskScore)
+    const recommendations = PollutionAnalysisService.generateRecommendations(
+      sensorPollutionData,
+      overallPollutionLevel
+    )
+    const alertLevel = PollutionAnalysisService.determineAlertLevel(
+      overallPollutionLevel,
+      riskScore
+    )
 
-    console.log(`📊 Historical analysis complete for "${shapeName}": ${overallPollutionLevel} (Risk: ${riskScore})`)
+    console.log(
+      `📊 Historical analysis complete for "${shapeName}": ${overallPollutionLevel} (Risk: ${riskScore})`
+    )
 
     return {
       shapeId,
@@ -498,9 +543,9 @@ export default class PollutionAnalysisService {
       riskScore,
       recommendations: [
         `Historical data from ${targetDate.toLocaleDateString()} at ${targetDate.toLocaleTimeString()}`,
-        ...recommendations
+        ...recommendations,
       ],
-      alertLevel
+      alertLevel,
     }
   }
 }

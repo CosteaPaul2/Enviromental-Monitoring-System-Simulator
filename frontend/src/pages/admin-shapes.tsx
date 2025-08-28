@@ -21,10 +21,14 @@ import {
   ModalFooter,
 } from "@heroui/modal";
 import { Pagination } from "@heroui/pagination";
-import { formatDistanceToNow } from 'date-fns'
-import AdminLayout from '@/layouts/AdminLayout'
-import { adminApi, AdminShape, ShapeDetails } from '@/lib/adminApi'
-import { useSuccessNotification, useErrorNotification } from '@/contexts/NotificationContext'
+import { formatDistanceToNow } from "date-fns";
+
+import AdminLayout from "@/layouts/AdminLayout";
+import { adminApi, AdminShape, ShapeDetails } from "@/lib/adminApi";
+import {
+  useSuccessNotification,
+  useErrorNotification,
+} from "@/contexts/NotificationContext";
 import { getSensorTypeInfo } from "@/lib/sensorsApi";
 
 export default function AdminShapesPage() {
@@ -152,6 +156,7 @@ export default function AdminShapesPage() {
     });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
+
     a.href = url;
     a.download = `shape-${shape.id}-${shape.name.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.json`;
     document.body.appendChild(a);
@@ -195,6 +200,7 @@ export default function AdminShapesPage() {
     });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
+
     a.href = url;
     a.download = `admin-shapes-export-${new Date().toISOString().split("T")[0]}.json`;
     document.body.appendChild(a);
@@ -247,8 +253,8 @@ export default function AdminShapesPage() {
           <Card>
             <CardBody className="text-center">
               <Icon
-                icon="tabler:map-2"
                 className="text-3xl text-primary mx-auto mb-2"
+                icon="tabler:map-2"
               />
               <div className="text-2xl font-bold">{shapes.length}</div>
               <div className="text-sm text-foreground/60">Total Areas</div>
@@ -257,8 +263,8 @@ export default function AdminShapesPage() {
           <Card>
             <CardBody className="text-center">
               <Icon
-                icon="tabler:circle"
                 className="text-3xl text-blue-500 mx-auto mb-2"
+                icon="tabler:circle"
               />
               <div className="text-2xl font-bold text-blue-500">
                 {shapes.filter((s) => s.type === "CIRCLE").length}
@@ -269,8 +275,8 @@ export default function AdminShapesPage() {
           <Card>
             <CardBody className="text-center">
               <Icon
-                icon="tabler:square"
                 className="text-3xl text-green-500 mx-auto mb-2"
+                icon="tabler:square"
               />
               <div className="text-2xl font-bold text-green-500">
                 {shapes.filter((s) => s.type === "RECTANGLE").length}
@@ -281,8 +287,8 @@ export default function AdminShapesPage() {
           <Card>
             <CardBody className="text-center">
               <Icon
-                icon="tabler:polygon"
                 className="text-3xl text-purple-500 mx-auto mb-2"
+                icon="tabler:polygon"
               />
               <div className="text-2xl font-bold text-purple-500">
                 {shapes.filter((s) => s.type === "POLYGON").length}
@@ -305,10 +311,18 @@ export default function AdminShapesPage() {
               />
               <Select
                 className="w-48"
-                items={[{ key: '', label: 'All Types' }, ...shapeTypes.map(type => ({ key: type, label: getShapeTypeInfo(type).label }))]}
+                items={[
+                  { key: "", label: "All Types" },
+                  ...shapeTypes.map((type) => ({
+                    key: type,
+                    label: getShapeTypeInfo(type).label,
+                  })),
+                ]}
                 placeholder="Filter by type"
                 selectedKeys={typeFilter ? [typeFilter] : []}
-                onSelectionChange={(value) => setTypeFilter(Array.from(value)[0] as string || '')}
+                onSelectionChange={(value) =>
+                  setTypeFilter((Array.from(value)[0] as string) || "")
+                }
               >
                 {(item) => <SelectItem key={item.key}>{item.label}</SelectItem>}
               </Select>
@@ -346,7 +360,7 @@ export default function AdminShapesPage() {
                             style={{ backgroundColor: `${typeInfo.color}20` }}
                           >
                             <Icon
-                              className="text-lg" 
+                              className="text-lg"
                               icon={typeInfo.icon}
                               style={{ color: typeInfo.color }}
                             />
@@ -360,7 +374,7 @@ export default function AdminShapesPage() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Chip color="primary" variant="flat" size="sm">
+                        <Chip color="primary" size="sm" variant="flat">
                           {typeInfo.label}
                         </Chip>
                       </TableCell>
@@ -371,7 +385,11 @@ export default function AdminShapesPage() {
                             {shape.user.email}
                           </p>
                           <Chip
-                            color={shape.user.role === 'ADMIN' ? 'warning' : 'default'}
+                            color={
+                              shape.user.role === "ADMIN"
+                                ? "warning"
+                                : "default"
+                            }
                             size="sm"
                             variant="flat"
                           >
@@ -382,8 +400,8 @@ export default function AdminShapesPage() {
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <Icon
-                            icon="tabler:device-analytics"
                             className="text-sm text-primary"
+                            icon="tabler:device-analytics"
                           />
                           <span className="font-semibold text-primary">
                             {shape._count?.sensorsInside || 0}
@@ -465,9 +483,11 @@ export default function AdminShapesPage() {
                   }}
                 >
                   <Icon
-                    className="text-lg" 
+                    className="text-lg"
                     icon={getShapeTypeInfo(selectedShape.type).icon}
-                    style={{ color: getShapeTypeInfo(selectedShape.type).color }}
+                    style={{
+                      color: getShapeTypeInfo(selectedShape.type).color,
+                    }}
                   />
                 </div>
                 <div>
@@ -545,8 +565,8 @@ export default function AdminShapesPage() {
                     {selectedShape.sensorsInside.length === 0 ? (
                       <div className="text-center py-8 text-foreground/60">
                         <Icon
-                          icon="tabler:device-analytics-off"
                           className="text-4xl mx-auto mb-2"
+                          icon="tabler:device-analytics-off"
                         />
                         <p>No sensors found inside this area</p>
                       </div>
@@ -570,9 +590,14 @@ export default function AdminShapesPage() {
                                   }}
                                 >
                                   <Icon
-                                    className="text-lg" 
-                                    icon={sensorInfo?.icon || 'tabler:device-analytics'}
-                                    style={{ color: sensorInfo?.color || '#3388ff' }}
+                                    className="text-lg"
+                                    icon={
+                                      sensorInfo?.icon ||
+                                      "tabler:device-analytics"
+                                    }
+                                    style={{
+                                      color: sensorInfo?.color || "#3388ff",
+                                    }}
                                   />
                                 </div>
                                 <div>
@@ -585,14 +610,20 @@ export default function AdminShapesPage() {
                                   </p>
                                   <div className="flex items-center gap-2 mt-1">
                                     <Chip
-                                      color={sensor.active ? 'success' : 'danger'}
+                                      color={
+                                        sensor.active ? "success" : "danger"
+                                      }
                                       size="sm"
                                       variant="flat"
                                     >
                                       {sensor.active ? "Active" : "Inactive"}
                                     </Chip>
                                     <Chip
-                                      color={sensor.ownerRole === 'ADMIN' ? 'warning' : 'default'}
+                                      color={
+                                        sensor.ownerRole === "ADMIN"
+                                          ? "warning"
+                                          : "default"
+                                      }
                                       size="sm"
                                       variant="flat"
                                     >

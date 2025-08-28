@@ -100,7 +100,6 @@ export function useAnimations() {
         },
       } as Variants,
 
-      // Specific animations for environmental monitoring
       sensorValue: {
         initial: { opacity: 0, scale: 0.8 },
         animate: {

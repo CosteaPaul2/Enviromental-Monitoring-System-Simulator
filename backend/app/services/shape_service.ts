@@ -4,7 +4,7 @@ import { ShapeType } from '@prisma/client'
 interface CreateShapeData {
   name: string
   type: ShapeType
-  geometry: any 
+  geometry: any
   userId: string
 }
 
@@ -18,7 +18,7 @@ interface ShapeResponse {
 }
 
 interface ShapeWithGeometry extends ShapeResponse {
-  geometry: any 
+  geometry: any
 }
 
 interface SpatialQueryResult {
@@ -33,7 +33,7 @@ export default class ShapeService {
     try {
       await prismaService.ensureConnection()
 
-      const result = await prismaService.client.$queryRaw<{id: number}[]>`
+      const result = await prismaService.client.$queryRaw<{ id: number }[]>`
         INSERT INTO "Shape" (name, type, geometry, "userId", "createdAt", "updatedAt")
         VALUES (
           ${data.name},
@@ -53,7 +53,7 @@ export default class ShapeService {
       const shapeId = result[0].id
 
       const createdShape = await prismaService.client.shape.findUnique({
-        where: { id: shapeId }
+        where: { id: shapeId },
       })
 
       if (!createdShape) {
@@ -61,7 +61,9 @@ export default class ShapeService {
       }
 
       const containedSensors = await this.getSensorsInShape(shapeId)
-      console.log(`Shape "${data.name}" created with ID ${shapeId}, contains ${containedSensors.length} sensors`)
+      console.log(
+        `Shape "${data.name}" created with ID ${shapeId}, contains ${containedSensors.length} sensors`
+      )
 
       return createdShape
     } catch (error) {
@@ -76,7 +78,7 @@ export default class ShapeService {
 
       const shapes = await prismaService.client.shape.findMany({
         where: { userId },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
       })
 
       return shapes
@@ -91,7 +93,7 @@ export default class ShapeService {
       await prismaService.ensureConnection()
 
       const shape = await prismaService.client.shape.findFirst({
-        where: { id: shapeId, userId }
+        where: { id: shapeId, userId },
       })
 
       return shape
@@ -106,7 +108,7 @@ export default class ShapeService {
       await prismaService.ensureConnection()
 
       const shape = await prismaService.client.shape.findFirst({
-        where: { id: shapeId, userId }
+        where: { id: shapeId, userId },
       })
 
       if (!shape) {
@@ -114,7 +116,7 @@ export default class ShapeService {
       }
 
       await prismaService.client.shape.delete({
-        where: { id: shapeId }
+        where: { id: shapeId },
       })
 
       console.log(`Shape "${shape.name}" (ID: ${shapeId}) deleted`)
@@ -125,7 +127,10 @@ export default class ShapeService {
     }
   }
 
-  static async getShapeWithGeometry(shapeId: number, userId: string): Promise<ShapeWithGeometry | null> {
+  static async getShapeWithGeometry(
+    shapeId: number,
+    userId: string
+  ): Promise<ShapeWithGeometry | null> {
     try {
       await prismaService.ensureConnection()
 
@@ -149,7 +154,7 @@ export default class ShapeService {
       const shape = result[0]
       return {
         ...shape,
-        geometry: JSON.parse(shape.geometry)
+        geometry: JSON.parse(shape.geometry),
       }
     } catch (error) {
       console.error('Failed to get shape with geometry:', error)
@@ -179,9 +184,9 @@ export default class ShapeService {
         return []
       }
 
-      return result.map(shape => ({
+      return result.map((shape) => ({
         ...shape,
-        geometry: JSON.parse(shape.geometry)
+        geometry: JSON.parse(shape.geometry),
       }))
     } catch (error) {
       console.error('Failed to get shapes with geometry:', error)
@@ -231,7 +236,10 @@ export default class ShapeService {
     }
   }
 
-  static async getShapesContainingSensorBySensorId(sensorId: string, userId: string): Promise<SpatialQueryResult[]> {
+  static async getShapesContainingSensorBySensorId(
+    sensorId: string,
+    userId: string
+  ): Promise<SpatialQueryResult[]> {
     try {
       await prismaService.ensureConnection()
 
@@ -253,12 +261,16 @@ export default class ShapeService {
     }
   }
 
-  static async updateShapeGeometry(shapeId: number, userId: string, geometry: any): Promise<boolean> {
+  static async updateShapeGeometry(
+    shapeId: number,
+    userId: string,
+    geometry: any
+  ): Promise<boolean> {
     try {
       await prismaService.ensureConnection()
 
       const shape = await prismaService.client.shape.findFirst({
-        where: { id: shapeId, userId }
+        where: { id: shapeId, userId },
       })
 
       if (!shape) {
@@ -285,7 +297,7 @@ export default class ShapeService {
     try {
       await prismaService.ensureConnection()
 
-      const result = await prismaService.client.$queryRaw`
+      const result = (await prismaService.client.$queryRaw`
         SELECT 
           id,
           name,
@@ -298,11 +310,11 @@ export default class ShapeService {
         WHERE "userId" = ${userId}
         AND "createdAt" <= ${targetDate}
         ORDER BY "createdAt" DESC
-      ` as any[]
+      `) as any[]
 
-      return result.map(shape => ({
+      return result.map((shape) => ({
         ...shape,
-        geometry: shape.geometry ? JSON.parse(shape.geometry) : null
+        geometry: shape.geometry ? JSON.parse(shape.geometry) : null,
       }))
     } catch (error) {
       console.error('Error getting historical shapes:', error)
@@ -314,7 +326,7 @@ export default class ShapeService {
     try {
       await prismaService.ensureConnection()
 
-      const result = await prismaService.client.$queryRaw`
+      const result = (await prismaService.client.$queryRaw`
         SELECT 
           s.id as "sensorId",
           s."sensorId" as "sensorName",
@@ -327,7 +339,7 @@ export default class ShapeService {
         AND s."createdAt" <= ${targetDate}
         AND s.location IS NOT NULL
         AND ST_Within(s.location, sh.geometry)
-      ` as any[]
+      `) as any[]
 
       return result
     } catch (error) {

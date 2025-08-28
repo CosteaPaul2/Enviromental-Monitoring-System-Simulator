@@ -288,7 +288,6 @@ export default function ShapeCard({
               </div>
             </div>
 
-            {/* Risk Score Bar */}
             <div>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-foreground/70">
@@ -314,7 +313,6 @@ export default function ShapeCard({
 
             <Divider />
 
-            {/* Sensor Summary */}
             <div>
               <h4 className="font-semibold text-foreground mb-3">
                 Sensor Overview
@@ -355,7 +353,6 @@ export default function ShapeCard({
                       type as Sensor["type"],
                     );
 
-                    // Count sensors by pollution level
                     const levelCounts = {
                       good: sensors.filter((s) => s.pollutionLevel === "good")
                         .length,
@@ -439,7 +436,6 @@ export default function ShapeCard({
                           </div>
                         </div>
 
-                        {/* Mini breakdown bar for multiple sensors of same type */}
                         {sensors.length > 1 && activeCount > 0 && (
                           <div className="flex gap-1 h-2 bg-content3 rounded-full overflow-hidden">
                             {levelCounts.good > 0 && (
@@ -486,7 +482,6 @@ export default function ShapeCard({
                   })}
                 </div>
 
-                {/* Zone Coverage Analysis */}
                 <div className="mt-3 p-3 bg-content3/50 rounded-lg border border-divider/50">
                   <div className="text-xs text-foreground/70 mb-1">
                     Zone Coverage Analysis
@@ -517,7 +512,6 @@ export default function ShapeCard({
               </div>
             )}
 
-            {/* Quick Recommendations */}
             {liveShapeData.pollutionAnalysis.recommendations.length > 0 && (
               <div>
                 <h4 className="font-semibold text-foreground mb-2">
@@ -560,7 +554,6 @@ export default function ShapeCard({
         </CardFooter>
       </Card>
 
-      {/* Detailed Analysis Modal */}
       <Modal
         backdrop="blur"
         classNames={{
@@ -593,7 +586,6 @@ export default function ShapeCard({
           </ModalHeader>
           <ModalBody>
             <div className="space-y-6">
-              {/* Individual Sensor Analysis */}
               <div>
                 <h4 className="font-semibold text-lg mb-4">Sensor Readings</h4>
                 <div className="space-y-3">
@@ -669,7 +661,6 @@ export default function ShapeCard({
                 </div>
               </div>
 
-              {/* Pollution Factors */}
               {liveShapeData.pollutionAnalysis.pollutionFactors.length > 0 && (
                 <div>
                   <h4 className="font-semibold text-lg mb-3">
@@ -696,7 +687,6 @@ export default function ShapeCard({
                 </div>
               )}
 
-              {/* All Recommendations */}
               {liveShapeData.pollutionAnalysis.recommendations.length > 0 && (
                 <div>
                   <h4 className="font-semibold text-lg mb-3">

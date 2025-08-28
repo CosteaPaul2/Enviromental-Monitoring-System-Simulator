@@ -38,7 +38,6 @@ export const useThemeColors = () => {
         },
       },
 
-
       status: {
         success: isDark ? "#697a21" : "#22c55e",
         warning: isDark ? "#b8b42d" : "#f59e0b",
@@ -47,7 +46,6 @@ export const useThemeColors = () => {
       },
     },
 
-    // Helper functions
     getTextColor: (background?: "light" | "dark") => {
       if (background === "light") return "#11181C";
       if (background === "dark") return "#f4f1f8";
@@ -56,7 +54,6 @@ export const useThemeColors = () => {
     },
 
     getContrastColor: (color: string) => {
-      // Simple contrast calculation
       const hex = color.replace("#", "");
       const r = parseInt(hex.substr(0, 2), 16);
       const g = parseInt(hex.substr(2, 2), 16);

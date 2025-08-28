@@ -1,9 +1,5 @@
 import { HttpContext } from '@adonisjs/core/http'
 import PrismaService from '#services/prisma_service'
-import SensorService from '#services/sensor_service'
-import ShapeService from '#services/shape_service'
-import SensorReadingService from '#services/sensor_reading_service'
-import PollutionAnalysisService from '#services/pollution_analysis_service'
 import bcrypt from 'bcrypt'
 
 export default class AdminController {
@@ -14,34 +10,23 @@ export default class AdminController {
     try {
       await PrismaService.ensureConnection()
 
-      const [
-        totalUsers,
-        totalSensors,
-        activeSensors,
-        totalShapes,
-        totalReadings,
-        adminUsers
-      ] = await Promise.all([
-        this.prisma.user.count(),
-        this.prisma.sensor.count(),
-        this.prisma.sensor.count({ where: { active: true } }),
-        this.prisma.shape.count(),
-        this.prisma.sensorReading.count(),
-        this.prisma.user.count({ where: { role: 'ADMIN' } })
-      ])
+      const [totalUsers, totalSensors, activeSensors, totalShapes, totalReadings, adminUsers] =
+        await Promise.all([
+          this.prisma.user.count(),
+          this.prisma.sensor.count(),
+          this.prisma.sensor.count({ where: { active: true } }),
+          this.prisma.shape.count(),
+          this.prisma.sensorReading.count(),
+          this.prisma.user.count({ where: { role: 'ADMIN' } }),
+        ])
 
       // Get recent activity (last 24 hours)
       const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000)
-      const [
-        newUsersToday,
-        newSensorsToday,
-        newShapesToday,
-        readingsToday
-      ] = await Promise.all([
+      const [newUsersToday, newSensorsToday, newShapesToday, readingsToday] = await Promise.all([
         this.prisma.user.count({ where: { createdAt: { gte: yesterday } } }),
         this.prisma.sensor.count({ where: { createdAt: { gte: yesterday } } }),
         this.prisma.shape.count({ where: { createdAt: { gte: yesterday } } }),
-        this.prisma.sensorReading.count({ where: { timestamp: { gte: yesterday } } })
+        this.prisma.sensorReading.count({ where: { timestamp: { gte: yesterday } } }),
       ])
 
       return response.json({
@@ -54,22 +39,22 @@ export default class AdminController {
             inactiveSensors: totalSensors - activeSensors,
             totalShapes,
             totalReadings,
-            adminUsers
+            adminUsers,
           },
           activity: {
             newUsersToday,
             newSensorsToday,
             newShapesToday,
-            readingsToday
-          }
-        }
+            readingsToday,
+          },
+        },
       })
     } catch (error) {
       console.error('Failed to get dashboard stats:', error)
       return response.status(500).json({
         success: false,
         message: 'Failed to fetch dashboard statistics',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       })
     }
   }
@@ -88,7 +73,7 @@ export default class AdminController {
       if (search) {
         where.OR = [
           { name: { contains: search, mode: 'insensitive' } },
-          { email: { contains: search, mode: 'insensitive' } }
+          { email: { contains: search, mode: 'insensitive' } },
         ]
       }
       if (role && (role === 'USER' || role === 'ADMIN')) {
@@ -109,15 +94,15 @@ export default class AdminController {
               select: {
                 sensors: true,
                 shapes: true,
-                accessTokens: true
-              }
-            }
+                accessTokens: true,
+              },
+            },
           },
           orderBy: { createdAt: 'desc' },
           skip: (page - 1) * limit,
-          take: limit
+          take: limit,
         }),
-        this.prisma.user.count({ where })
+        this.prisma.user.count({ where }),
       ])
 
       return response.json({
@@ -128,46 +113,51 @@ export default class AdminController {
             page,
             limit,
             total,
-            pages: Math.ceil(total / limit)
-          }
-        }
+            pages: Math.ceil(total / limit),
+          },
+        },
       })
     } catch (error) {
       console.error('Failed to get users:', error)
       return response.status(500).json({
         success: false,
         message: 'Failed to fetch users',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       })
     }
   }
 
   public async createUser({ request, response }: HttpContext) {
     try {
-      const { email, password, name, role = 'USER' } = request.only(['email', 'password', 'name', 'role'])
+      const {
+        email,
+        password,
+        name,
+        role = 'USER',
+      } = request.only(['email', 'password', 'name', 'role'])
 
       if (!email || !password || !name) {
         return response.status(400).json({
           success: false,
-          message: 'Email, password, and name are required'
+          message: 'Email, password, and name are required',
         })
       }
 
       if (role !== 'USER' && role !== 'ADMIN') {
         return response.status(400).json({
           success: false,
-          message: 'Role must be either USER or ADMIN'
+          message: 'Role must be either USER or ADMIN',
         })
       }
 
       const existingUser = await this.prisma.user.findUnique({
-        where: { email }
+        where: { email },
       })
 
       if (existingUser) {
         return response.status(400).json({
           success: false,
-          message: 'User with this email already exists'
+          message: 'User with this email already exists',
         })
       }
 
@@ -177,28 +167,28 @@ export default class AdminController {
           email,
           password: hashedPassword,
           name,
-          role
+          role,
         },
         select: {
           id: true,
           email: true,
           name: true,
           role: true,
-          createdAt: true
-        }
+          createdAt: true,
+        },
       })
 
       return response.status(201).json({
         success: true,
         message: 'User created successfully',
-        data: { user }
+        data: { user },
       })
     } catch (error) {
       console.error('Failed to create user:', error)
       return response.status(500).json({
         success: false,
         message: 'Failed to create user',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       })
     }
   }
@@ -211,7 +201,7 @@ export default class AdminController {
       if (role && role !== 'USER' && role !== 'ADMIN') {
         return response.status(400).json({
           success: false,
-          message: 'Role must be either USER or ADMIN'
+          message: 'Role must be either USER or ADMIN',
         })
       }
 
@@ -228,27 +218,27 @@ export default class AdminController {
           email: true,
           name: true,
           role: true,
-          updatedAt: true
-        }
+          updatedAt: true,
+        },
       })
 
       return response.json({
         success: true,
         message: 'User updated successfully',
-        data: { user }
+        data: { user },
       })
     } catch (error) {
       if (error.code === 'P2025') {
         return response.status(404).json({
           success: false,
-          message: 'User not found'
+          message: 'User not found',
         })
       }
       console.error('Failed to update user:', error)
       return response.status(500).json({
         success: false,
         message: 'Failed to update user',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       })
     }
   }
@@ -261,30 +251,30 @@ export default class AdminController {
       if (userId === request.user?.id) {
         return response.status(400).json({
           success: false,
-          message: 'Cannot delete your own account'
+          message: 'Cannot delete your own account',
         })
       }
 
       await this.prisma.user.delete({
-        where: { id: userId }
+        where: { id: userId },
       })
 
       return response.json({
         success: true,
-        message: 'User deleted successfully'
+        message: 'User deleted successfully',
       })
     } catch (error) {
       if (error.code === 'P2025') {
         return response.status(404).json({
           success: false,
-          message: 'User not found'
+          message: 'User not found',
         })
       }
       console.error('Failed to delete user:', error)
       return response.status(500).json({
         success: false,
         message: 'Failed to delete user',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       })
     }
   }
@@ -320,20 +310,20 @@ export default class AdminController {
                 id: true,
                 email: true,
                 name: true,
-                role: true
-              }
+                role: true,
+              },
             },
             _count: {
               select: {
-                readings: true
-              }
-            }
+                readings: true,
+              },
+            },
           },
           orderBy: { createdAt: 'desc' },
           skip: (page - 1) * limit,
-          take: limit
+          take: limit,
         }),
-        this.prisma.sensor.count({ where })
+        this.prisma.sensor.count({ where }),
       ])
 
       return response.json({
@@ -344,16 +334,16 @@ export default class AdminController {
             page,
             limit,
             total,
-            pages: Math.ceil(total / limit)
-          }
-        }
+            pages: Math.ceil(total / limit),
+          },
+        },
       })
     } catch (error) {
       console.error('Failed to get all sensors:', error)
       return response.status(500).json({
         success: false,
         message: 'Failed to fetch sensors',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       })
     }
   }
@@ -363,25 +353,25 @@ export default class AdminController {
       const sensorId = parseInt(params.id)
 
       await this.prisma.sensor.delete({
-        where: { id: sensorId }
+        where: { id: sensorId },
       })
 
       return response.json({
         success: true,
-        message: 'Sensor deleted successfully'
+        message: 'Sensor deleted successfully',
       })
     } catch (error) {
       if (error.code === 'P2025') {
         return response.status(404).json({
           success: false,
-          message: 'Sensor not found'
+          message: 'Sensor not found',
         })
       }
       console.error('Failed to delete sensor:', error)
       return response.status(500).json({
         success: false,
         message: 'Failed to delete sensor',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       })
     }
   }
@@ -414,9 +404,10 @@ export default class AdminController {
 
       // Add pagination parameters
       const offsetParam = (page - 1) * limit
-      
+
       const [shapes, totalResult] = await Promise.all([
-        this.prisma.$queryRawUnsafe(`
+        this.prisma.$queryRawUnsafe(
+          `
           SELECT 
             sh.id,
             sh.name,
@@ -443,17 +434,24 @@ export default class AdminController {
           WHERE ${whereConditions}
           ORDER BY sh."createdAt" DESC
           LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
-        `, ...queryParams, limit, offsetParam) as any[],
-        
-        this.prisma.$queryRawUnsafe(`
+        `,
+          ...queryParams,
+          limit,
+          offsetParam
+        ),
+
+        this.prisma.$queryRawUnsafe(
+          `
           SELECT COUNT(*)::int as total
           FROM "Shape" sh
           WHERE ${whereConditions}
-        `, ...queryParams) as any[]
+        `,
+          ...queryParams
+        ),
       ])
 
       // Transform the result to match the expected format
-      const formattedShapes = shapes.map(shape => ({
+      const formattedShapes = (shapes as any[]).map((shape: any) => ({
         id: shape.id,
         name: shape.name,
         type: shape.type,
@@ -464,14 +462,14 @@ export default class AdminController {
           id: shape.user_id,
           email: shape.user_email,
           name: shape.user_name,
-          role: shape.user_role
+          role: shape.user_role,
         },
         _count: {
-          sensorsInside: shape.sensorsInside
-        }
+          sensorsInside: shape.sensorsInside,
+        },
       }))
 
-      const total = totalResult[0]?.total || 0
+      const total = (totalResult as any[])[0]?.total || 0
 
       return response.json({
         success: true,
@@ -481,16 +479,16 @@ export default class AdminController {
             page,
             limit,
             total,
-            pages: Math.ceil(total / limit)
-          }
-        }
+            pages: Math.ceil(total / limit),
+          },
+        },
       })
     } catch (error) {
       console.error('Failed to get all shapes:', error)
       return response.status(500).json({
         success: false,
         message: 'Failed to fetch shapes',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       })
     }
   }
@@ -498,7 +496,7 @@ export default class AdminController {
   public async getShapeDetails({ response, params }: HttpContext) {
     try {
       const shapeId = parseInt(params.id)
-      
+
       const shape = await this.prisma.shape.findUnique({
         where: { id: shapeId },
         include: {
@@ -507,21 +505,21 @@ export default class AdminController {
               id: true,
               email: true,
               name: true,
-              role: true
-            }
-          }
-        }
+              role: true,
+            },
+          },
+        },
       })
 
       if (!shape) {
         return response.status(404).json({
           success: false,
-          message: 'Shape not found'
+          message: 'Shape not found',
         })
       }
 
       // Get sensors within this shape with detailed info
-      const sensorsInShape = await this.prisma.$queryRaw`
+      const sensorsInShape = (await this.prisma.$queryRaw`
         SELECT 
           s.id,
           s."sensorId",
@@ -539,34 +537,36 @@ export default class AdminController {
         WHERE s.location IS NOT NULL
         AND ST_Contains(sh.geometry, s.location)
         ORDER BY s."createdAt" DESC
-      ` as any[]
+      `) as any[]
 
       // Get geometry
-      const shapeWithGeometry = await this.prisma.$queryRaw`
+      const shapeWithGeometry = (await this.prisma.$queryRaw`
         SELECT ST_AsGeoJSON(geometry) as geometry
         FROM "Shape"
         WHERE id = ${shapeId}
-      ` as any[]
+      `) as any[]
 
       return response.json({
         success: true,
         data: {
           shape: {
             ...shape,
-            geometry: shapeWithGeometry[0]?.geometry ? JSON.parse(shapeWithGeometry[0].geometry) : null,
+            geometry: shapeWithGeometry[0]?.geometry
+              ? JSON.parse(shapeWithGeometry[0].geometry)
+              : null,
             sensorsInside: sensorsInShape,
             _count: {
-              sensorsInside: sensorsInShape.length
-            }
-          }
-        }
+              sensorsInside: sensorsInShape.length,
+            },
+          },
+        },
       })
     } catch (error) {
       console.error('Failed to get shape details:', error)
       return response.status(500).json({
         success: false,
         message: 'Failed to fetch shape details',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       })
     }
   }
@@ -576,25 +576,25 @@ export default class AdminController {
       const shapeId = parseInt(params.id)
 
       await this.prisma.shape.delete({
-        where: { id: shapeId }
+        where: { id: shapeId },
       })
 
       return response.json({
         success: true,
-        message: 'Shape deleted successfully'
+        message: 'Shape deleted successfully',
       })
     } catch (error) {
       if (error.code === 'P2025') {
         return response.status(404).json({
           success: false,
-          message: 'Shape not found'
+          message: 'Shape not found',
         })
       }
       console.error('Failed to delete shape:', error)
       return response.status(500).json({
         success: false,
         message: 'Failed to delete shape',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       })
     }
   }
@@ -606,7 +606,7 @@ export default class AdminController {
 
       // Get sensor readings over time (last 30 days)
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-      
+
       const readingsOverTime = await this.prisma.$queryRaw`
         SELECT 
           DATE(timestamp) as date,
@@ -621,8 +621,8 @@ export default class AdminController {
       const sensorTypes = await this.prisma.sensor.groupBy({
         by: ['type'],
         _count: {
-          type: true
-        }
+          type: true,
+        },
       })
 
       // Get user registration over time (last 30 days)
@@ -641,15 +641,15 @@ export default class AdminController {
         data: {
           readingsOverTime,
           sensorTypes,
-          userRegistrations
-        }
+          userRegistrations,
+        },
       })
     } catch (error) {
       console.error('Failed to get system analytics:', error)
       return response.status(500).json({
         success: false,
         message: 'Failed to fetch system analytics',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       })
     }
   }

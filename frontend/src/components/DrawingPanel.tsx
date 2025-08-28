@@ -36,7 +36,8 @@ const drawingTools: DrawingTool[] = [
     name: "Custom Area",
     icon: "tabler:polygon",
     color: "success",
-    description: "Draw irregular monitoring zones - click corners, double-click to finish",
+    description:
+      "Draw irregular monitoring zones - click corners, double-click to finish",
     dbType: "POLYGON",
   },
   {
@@ -52,7 +53,8 @@ const drawingTools: DrawingTool[] = [
     name: "Impact Radius",
     icon: "tabler:circle",
     color: "primary",
-    description: "Define circular impact zones - click center, drag to set radius",
+    description:
+      "Define circular impact zones - click center, drag to set radius",
     dbType: "CIRCLE",
   },
 ];
@@ -243,20 +245,20 @@ export default function DrawingPanel({
                       crosshair.
                       {selectedTool === "rectangle" && (
                         <div className="mt-1">
-                          <strong>Monitoring Zone:</strong> Click and drag to create
-                          rectangular area boundaries
+                          <strong>Monitoring Zone:</strong> Click and drag to
+                          create rectangular area boundaries
                         </div>
                       )}
                       {selectedTool === "polygon" && (
                         <div className="mt-1">
-                          <strong>Custom Area:</strong> Click to add boundary points,
-                          double-click to finish zone
+                          <strong>Custom Area:</strong> Click to add boundary
+                          points, double-click to finish zone
                         </div>
                       )}
                       {selectedTool === "circle" && (
                         <div className="mt-1">
-                          <strong>Impact Radius:</strong> Click center point, drag to set
-                          radius for circular impact zone
+                          <strong>Impact Radius:</strong> Click center point,
+                          drag to set radius for circular impact zone
                         </div>
                       )}
                     </div>

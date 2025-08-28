@@ -49,7 +49,6 @@ export default function PanelSwitcher(props: PanelSwitcherProps) {
 
   return (
     <div className="w-full max-w-md">
-      {/* Panel Switcher Header */}
       <Card className="mb-4">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between w-full">
@@ -99,7 +98,6 @@ export default function PanelSwitcher(props: PanelSwitcherProps) {
         </CardBody>
       </Card>
 
-      {/* Active Panel */}
       {activePanel === "drawing" ? (
         <DrawingPanel
           drawnShapesCount={props.drawnShapesCount}

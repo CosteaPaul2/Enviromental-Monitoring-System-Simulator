@@ -37,7 +37,6 @@ export function useDrawingInteractions({
     type: "info" | "success" | "warning";
   } | null>(null);
 
-  // Reset state when tool changes
   useEffect(() => {
     setState({
       isDrawing: false,
@@ -48,13 +47,11 @@ export function useDrawingInteractions({
     setFeedback(null);
   }, [selectedTool]);
 
-  // Handle mouse move for live preview
   const handleMouseMove = useCallback(
     (point: Point) => {
       if (!selectedTool || !isDrawingMode) return;
 
       setState((prev) => {
-        // Show contextual feedback based on the current tool and state
         if (selectedTool.id === "polygon" && prev.points.length > 0) {
           setFeedback({
             message: "Click to add point, double-click to complete",
@@ -81,7 +78,6 @@ export function useDrawingInteractions({
     [selectedTool, isDrawingMode],
   );
 
-  // Handle click/tap for point placement
   const handleClick = useCallback(
     (point: Point) => {
       if (!selectedTool || !isDrawingMode) return;
@@ -129,7 +125,6 @@ export function useDrawingInteractions({
     [selectedTool, isDrawingMode, onShapeComplete],
   );
 
-  // Handle double click for polygon completion
   const handleDoubleClick = useCallback(() => {
     if (!selectedTool || !isDrawingMode || selectedTool.id !== "polygon")
       return;
@@ -154,7 +149,6 @@ export function useDrawingInteractions({
     });
   }, [selectedTool, isDrawingMode, onShapeComplete]);
 
-  // Handle drag start for rectangle
   const handleDragStart = useCallback(
     (point: Point) => {
       if (!selectedTool || !isDrawingMode || selectedTool.id !== "rectangle")
@@ -175,7 +169,6 @@ export function useDrawingInteractions({
     [selectedTool, isDrawingMode],
   );
 
-  // Handle drag end for rectangle
   const handleDragEnd = useCallback(
     (point: Point) => {
       if (!selectedTool || !isDrawingMode || selectedTool.id !== "rectangle")
@@ -205,7 +198,6 @@ export function useDrawingInteractions({
     [selectedTool, isDrawingMode, onShapeComplete],
   );
 
-  // Handle drawing cancellation
   const handleCancel = useCallback(() => {
     setState({
       isDrawing: false,

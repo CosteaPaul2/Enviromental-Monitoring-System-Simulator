@@ -8,7 +8,7 @@ interface AnimatedContainerProps {
   className?: string;
   delay?: number;
   isVisible?: boolean;
-  index?: number; // For animations that need an index parameter
+  index?: number;
 }
 
 export function AnimatedContainer({
@@ -22,7 +22,6 @@ export function AnimatedContainer({
   const animations = useAnimations();
   const animationValue = animations[animation];
 
-  // Handle function-based animations (like listItem)
   const variants =
     typeof animationValue === "function"
       ? animationValue(index ?? 0)

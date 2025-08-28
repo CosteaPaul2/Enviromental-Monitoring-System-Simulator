@@ -79,7 +79,6 @@ class PollutionMonitorService {
           geometry: shape.geometry,
         }));
 
-        // Update cache
         this.pollutionCache.clear();
         shapes.forEach((shape: ShapeWithPollution) => {
           this.pollutionCache.set(shape.id, shape);
@@ -103,7 +102,6 @@ class PollutionMonitorService {
     const now = new Date().toISOString();
 
     shapes.forEach((shape) => {
-      // Only generate alerts for high-priority issues (critical, high, or dangerous pollution)
       if (
         (shape.alertLevel === "critical" ||
           shape.alertLevel === "high" ||
@@ -112,7 +110,6 @@ class PollutionMonitorService {
       ) {
         const alertId = `alert-${shape.id}-${Date.now()}`;
 
-        // Determine primary pollution type from shape data
         let primaryType = "Environmental Condition";
 
         if (shape.pollutionLevel === "dangerous") {
@@ -132,8 +129,8 @@ class PollutionMonitorService {
           level: shape.pollutionLevel,
           alertLevel: shape.alertLevel,
           riskScore: shape.riskScore,
-          pollutionFactors: [], // Will be populated when detailed data is fetched
-          recommendations: [], // Will be populated when detailed data is fetched
+          pollutionFactors: [],
+          recommendations: [],
           sensorCount: shape.sensorCount,
           activeSensorCount: shape.activeSensorCount,
           timestamp: now,
@@ -152,7 +149,6 @@ class PollutionMonitorService {
     const shapes = await this.fetchPollutionData();
     const basicAlerts = this.generateAlertsFromShapes(shapes);
 
-    // Enhance alerts with detailed pollution analysis
     const detailedAlerts = await Promise.all(
       basicAlerts.map(async (alert) => {
         try {
@@ -228,10 +224,8 @@ class PollutionMonitorService {
   startMonitoring(intervalMs: number = 30000): void {
     this.stopMonitoring();
 
-    // Initial fetch
     this.fetchPollutionData();
 
-    // Set up recurring fetch
     this.updateInterval = setInterval(() => {
       this.fetchPollutionData();
     }, intervalMs);
@@ -254,12 +248,10 @@ class PollutionMonitorService {
     return Date.now() - this.lastUpdate.getTime() > maxAgeMs;
   }
 
-  // Filter alerts by severity level
   getAlertsByLevel(level: PollutionAlert["alertLevel"]): PollutionAlert[] {
     return this.alertsCache.filter((alert) => alert.alertLevel === level);
   }
 
-  // Get most recent alerts
   getRecentAlerts(limit: number = 5): PollutionAlert[] {
     return this.alertsCache
       .sort(
@@ -269,7 +261,6 @@ class PollutionMonitorService {
       .slice(0, limit);
   }
 
-  // Get high priority alerts (critical + high)
   getHighPriorityAlerts(): PollutionAlert[] {
     return this.alertsCache.filter(
       (alert) => alert.alertLevel === "critical" || alert.alertLevel === "high",

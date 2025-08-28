@@ -120,7 +120,6 @@ export default function HistoricalTimePicker({
       {isHistoricalMode && (
         <CardBody className="pt-0">
           <div className="space-y-4">
-            {/* Date and Time Selection */}
             <div className="grid grid-cols-2 gap-3">
               <Input
                 label="Date"
@@ -147,7 +146,6 @@ export default function HistoricalTimePicker({
               </Select>
             </div>
 
-            {/* Current Selection Display */}
             <div className="p-3 bg-content2 rounded-lg">
               <div className="flex items-center justify-between">
                 <div>
@@ -165,7 +163,6 @@ export default function HistoricalTimePicker({
               </div>
             </div>
 
-            {/* Quick Select Buttons */}
             <div className="space-y-2">
               <p className="text-sm font-medium text-foreground/70">
                 Quick Select:
@@ -187,7 +184,6 @@ export default function HistoricalTimePicker({
               </div>
             </div>
 
-            {/* Jump to Now Button */}
             <Button
               className="w-full"
               color="success"

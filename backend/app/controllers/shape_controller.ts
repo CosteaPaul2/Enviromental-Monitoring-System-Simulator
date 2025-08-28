@@ -11,7 +11,7 @@ export default class ShapeController {
       if (!request.user) {
         return response.status(401).json({
           success: false,
-          message: 'Unauthorized access'
+          message: 'Unauthorized access',
         })
       }
 
@@ -21,14 +21,14 @@ export default class ShapeController {
         success: true,
         data: {
           shapes,
-          count: shapes.length
-        }
+          count: shapes.length,
+        },
       })
     } catch (error) {
       return response.status(500).json({
         success: false,
         message: 'Failed to fetch shapes',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       })
     }
   }
@@ -38,7 +38,7 @@ export default class ShapeController {
       if (!request.user) {
         return response.status(401).json({
           success: false,
-          message: 'Unauthorized access'
+          message: 'Unauthorized access',
         })
       }
 
@@ -48,23 +48,26 @@ export default class ShapeController {
         shapes.map(async (shape) => {
           try {
             const sensorsInShape = await ShapeService.getSensorsInShape(shape.id)
-            
+
             const detailedSensors = await Promise.all(
               sensorsInShape.map(async (sensor) => {
                 try {
-                  const sensorDetails = await SensorService.getSensorByDbId(sensor.sensorId, request.user!.id)
+                  const sensorDetails = await SensorService.getSensorByDbId(
+                    sensor.sensorId,
+                    request.user!.id
+                  )
                   return {
                     id: sensor.sensorId,
                     sensorId: sensor.sensorName,
                     type: sensorDetails?.type || 'AIR_QUALITY',
-                    active: sensorDetails?.active || false
+                    active: sensorDetails?.active || false,
                   }
                 } catch (error) {
                   return {
                     id: sensor.sensorId,
                     sensorId: sensor.sensorName,
                     type: 'AIR_QUALITY',
-                    active: false
+                    active: false,
                   }
                 }
               })
@@ -82,7 +85,7 @@ export default class ShapeController {
               riskScore: pollutionAnalysis.riskScore,
               alertLevel: pollutionAnalysis.alertLevel,
               sensorCount: detailedSensors.length,
-              activeSensorCount: detailedSensors.filter(s => s.active).length
+              activeSensorCount: detailedSensors.filter((s) => s.active).length,
             }
           } catch (error) {
             console.warn(`Failed to analyze pollution for shape ${shape.id}:`, error)
@@ -92,7 +95,7 @@ export default class ShapeController {
               riskScore: 0,
               alertLevel: 'none',
               sensorCount: 0,
-              activeSensorCount: 0
+              activeSensorCount: 0,
             }
           }
         })
@@ -102,14 +105,14 @@ export default class ShapeController {
         success: true,
         data: {
           shapes: shapesWithPollution,
-          count: shapesWithPollution.length
-        }
+          count: shapesWithPollution.length,
+        },
       })
     } catch (error) {
       return response.status(500).json({
         success: false,
         message: 'Failed to fetch shapes with geometry',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       })
     }
   }
@@ -119,7 +122,7 @@ export default class ShapeController {
       if (!request.user) {
         return response.status(401).json({
           success: false,
-          message: 'Unauthorized access'
+          message: 'Unauthorized access',
         })
       }
 
@@ -129,7 +132,7 @@ export default class ShapeController {
       if (isNaN(shapeId)) {
         return response.status(400).json({
           success: false,
-          message: 'Invalid shape ID'
+          message: 'Invalid shape ID',
         })
       }
 
@@ -138,19 +141,19 @@ export default class ShapeController {
       if (!shape) {
         return response.status(404).json({
           success: false,
-          message: 'Shape not found'
+          message: 'Shape not found',
         })
       }
 
       return response.json({
         success: true,
-        data: { shape }
+        data: { shape },
       })
     } catch (error) {
       return response.status(500).json({
         success: false,
         message: 'Failed to fetch shape',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       })
     }
   }
@@ -160,7 +163,7 @@ export default class ShapeController {
       if (!request.user) {
         return response.status(401).json({
           success: false,
-          message: 'Unauthorized access'
+          message: 'Unauthorized access',
         })
       }
 
@@ -170,7 +173,7 @@ export default class ShapeController {
       if (isNaN(shapeId)) {
         return response.status(400).json({
           success: false,
-          message: 'Invalid shape ID'
+          message: 'Invalid shape ID',
         })
       }
 
@@ -179,19 +182,19 @@ export default class ShapeController {
       if (!shape) {
         return response.status(404).json({
           success: false,
-          message: 'Shape not found'
+          message: 'Shape not found',
         })
       }
 
       return response.json({
         success: true,
-        data: { shape }
+        data: { shape },
       })
     } catch (error) {
       return response.status(500).json({
         success: false,
         message: 'Failed to fetch shape with geometry',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       })
     }
   }
@@ -201,7 +204,7 @@ export default class ShapeController {
       if (!request.user) {
         return response.status(401).json({
           success: false,
-          message: 'Unauthorized access'
+          message: 'Unauthorized access',
         })
       }
 
@@ -214,8 +217,8 @@ export default class ShapeController {
           errors: {
             name: !name ? 'Name is required' : undefined,
             type: !type ? 'Type is required' : undefined,
-            geometry: !geometry ? 'Geometry is required' : undefined
-          }
+            geometry: !geometry ? 'Geometry is required' : undefined,
+          },
         })
       }
 
@@ -223,14 +226,14 @@ export default class ShapeController {
         return response.status(400).json({
           success: false,
           message: 'Invalid shape type',
-          validTypes: Object.values(ShapeType)
+          validTypes: Object.values(ShapeType),
         })
       }
 
       if (!geometry.type || !geometry.coordinates) {
         return response.status(400).json({
           success: false,
-          message: 'Invalid geometry format. Expected GeoJSON with type and coordinates'
+          message: 'Invalid geometry format. Expected GeoJSON with type and coordinates',
         })
       }
 
@@ -238,7 +241,7 @@ export default class ShapeController {
         name: name.trim(),
         type,
         geometry,
-        userId: request.user.id
+        userId: request.user.id,
       })
 
       const containedSensors = await ShapeService.getSensorsInShape(shape.id)
@@ -246,19 +249,19 @@ export default class ShapeController {
       return response.status(201).json({
         success: true,
         message: 'Shape created successfully',
-        data: { 
+        data: {
           shape,
           containedSensors: {
             sensors: containedSensors,
-            count: containedSensors.length
-          }
-        }
+            count: containedSensors.length,
+          },
+        },
       })
     } catch (error) {
       return response.status(500).json({
         success: false,
         message: 'Failed to create shape',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       })
     }
   }
@@ -268,7 +271,7 @@ export default class ShapeController {
       if (!request.user) {
         return response.status(401).json({
           success: false,
-          message: 'Unauthorized access'
+          message: 'Unauthorized access',
         })
       }
 
@@ -278,7 +281,7 @@ export default class ShapeController {
       if (isNaN(shapeId)) {
         return response.status(400).json({
           success: false,
-          message: 'Invalid shape ID'
+          message: 'Invalid shape ID',
         })
       }
 
@@ -287,26 +290,26 @@ export default class ShapeController {
       if (!result) {
         return response.status(404).json({
           success: false,
-          message: 'Shape not found'
+          message: 'Shape not found',
         })
       }
 
       return response.json({
         success: true,
-        message: 'Shape deleted successfully'
+        message: 'Shape deleted successfully',
       })
     } catch (error) {
       if (error.message && error.message.includes('not found')) {
         return response.status(404).json({
           success: false,
-          message: 'Shape not found for this user'
+          message: 'Shape not found for this user',
         })
       }
 
       return response.status(500).json({
         success: false,
         message: 'Failed to delete shape',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       })
     }
   }
@@ -316,7 +319,7 @@ export default class ShapeController {
       if (!request.user) {
         return response.status(401).json({
           success: false,
-          message: 'Unauthorized access'
+          message: 'Unauthorized access',
         })
       }
 
@@ -327,21 +330,21 @@ export default class ShapeController {
       if (isNaN(shapeId)) {
         return response.status(400).json({
           success: false,
-          message: 'Invalid shape ID'
+          message: 'Invalid shape ID',
         })
       }
 
       if (!geometry) {
         return response.status(400).json({
           success: false,
-          message: 'Geometry is required'
+          message: 'Geometry is required',
         })
       }
 
       if (!geometry.type || !geometry.coordinates) {
         return response.status(400).json({
           success: false,
-          message: 'Invalid geometry format. Expected GeoJSON with type and coordinates'
+          message: 'Invalid geometry format. Expected GeoJSON with type and coordinates',
         })
       }
 
@@ -350,7 +353,7 @@ export default class ShapeController {
       if (!result) {
         return response.status(404).json({
           success: false,
-          message: 'Shape not found'
+          message: 'Shape not found',
         })
       }
 
@@ -362,22 +365,22 @@ export default class ShapeController {
         data: {
           containedSensors: {
             sensors: containedSensors,
-            count: containedSensors.length
-          }
-        }
+            count: containedSensors.length,
+          },
+        },
       })
     } catch (error) {
       if (error.message && error.message.includes('not found')) {
         return response.status(404).json({
           success: false,
-          message: 'Shape not found for this user'
+          message: 'Shape not found for this user',
         })
       }
 
       return response.status(500).json({
         success: false,
         message: 'Failed to update shape',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       })
     }
   }
@@ -387,7 +390,7 @@ export default class ShapeController {
       if (!request.user) {
         return response.status(401).json({
           success: false,
-          message: 'Unauthorized access'
+          message: 'Unauthorized access',
         })
       }
 
@@ -397,7 +400,7 @@ export default class ShapeController {
       if (isNaN(shapeId)) {
         return response.status(400).json({
           success: false,
-          message: 'Invalid shape ID'
+          message: 'Invalid shape ID',
         })
       }
 
@@ -405,7 +408,7 @@ export default class ShapeController {
       if (!shape) {
         return response.status(404).json({
           success: false,
-          message: 'Shape not found'
+          message: 'Shape not found',
         })
       }
 
@@ -417,14 +420,14 @@ export default class ShapeController {
           shapeId,
           shapeName: shape.name,
           sensors,
-          count: sensors.length
-        }
+          count: sensors.length,
+        },
       })
     } catch (error) {
       return response.status(500).json({
         success: false,
         message: 'Failed to get sensors in shape',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       })
     }
   }
@@ -434,7 +437,7 @@ export default class ShapeController {
       if (!request.user) {
         return response.status(401).json({
           success: false,
-          message: 'Unauthorized access'
+          message: 'Unauthorized access',
         })
       }
 
@@ -443,25 +446,28 @@ export default class ShapeController {
       if (!sensorId) {
         return response.status(400).json({
           success: false,
-          message: 'Sensor ID is required'
+          message: 'Sensor ID is required',
         })
       }
 
-      const shapes = await ShapeService.getShapesContainingSensorBySensorId(sensorId, request.user.id)
+      const shapes = await ShapeService.getShapesContainingSensorBySensorId(
+        sensorId,
+        request.user.id
+      )
 
       return response.json({
         success: true,
         data: {
           sensorId,
           shapes,
-          count: shapes.length
-        }
+          count: shapes.length,
+        },
       })
     } catch (error) {
       return response.status(500).json({
         success: false,
         message: 'Failed to get shapes containing sensor',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       })
     }
   }
@@ -471,7 +477,7 @@ export default class ShapeController {
       if (!request.user) {
         return response.status(401).json({
           success: false,
-          message: 'Unauthorized access'
+          message: 'Unauthorized access',
         })
       }
 
@@ -481,7 +487,7 @@ export default class ShapeController {
       if (isNaN(shapeId)) {
         return response.status(400).json({
           success: false,
-          message: 'Invalid shape ID'
+          message: 'Invalid shape ID',
         })
       }
 
@@ -489,7 +495,7 @@ export default class ShapeController {
       if (!shape) {
         return response.status(404).json({
           success: false,
-          message: 'Shape not found'
+          message: 'Shape not found',
         })
       }
 
@@ -499,7 +505,10 @@ export default class ShapeController {
       const detailedSensors = await Promise.all(
         sensorsInShape.map(async (sensor) => {
           try {
-            const sensorDetails = await SensorService.getSensorByDbId(sensor.sensorId, request.user!.id)
+            const sensorDetails = await SensorService.getSensorByDbId(
+              sensor.sensorId,
+              request.user!.id
+            )
             return {
               id: sensor.sensorId,
               sensorId: sensor.sensorName,
@@ -507,7 +516,7 @@ export default class ShapeController {
               active: sensorDetails?.active || false,
               latitude: sensorDetails?.latitude,
               longitude: sensorDetails?.longitude,
-              user: sensorDetails?.user
+              user: sensorDetails?.user,
             }
           } catch (error) {
             console.warn(`Failed to get details for sensor ${sensor.sensorId}:`, error)
@@ -515,7 +524,7 @@ export default class ShapeController {
               id: sensor.sensorId,
               sensorId: sensor.sensorName,
               type: 'AIR_QUALITY',
-              active: false
+              active: false,
             }
           }
         })
@@ -536,25 +545,25 @@ export default class ShapeController {
             type: shape.type,
             createdAt: shape.createdAt,
             updatedAt: shape.updatedAt,
-            geometry: shapeWithGeometry?.geometry
+            geometry: shapeWithGeometry?.geometry,
           },
           sensors: detailedSensors,
           pollutionAnalysis,
           summary: {
             totalSensors: detailedSensors.length,
-            activeSensors: detailedSensors.filter(s => s.active).length,
+            activeSensors: detailedSensors.filter((s) => s.active).length,
             pollutionLevel: pollutionAnalysis.overallPollutionLevel,
             riskScore: pollutionAnalysis.riskScore,
-            alertLevel: pollutionAnalysis.alertLevel
-          }
-        }
+            alertLevel: pollutionAnalysis.alertLevel,
+          },
+        },
       })
     } catch (error) {
       console.error('Failed to get shape details:', error)
       return response.status(500).json({
         success: false,
         message: 'Failed to get shape details',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       })
     }
   }
@@ -564,7 +573,7 @@ export default class ShapeController {
       if (!request.user) {
         return response.status(401).json({
           success: false,
-          message: 'Unauthorized access'
+          message: 'Unauthorized access',
         })
       }
 
@@ -573,7 +582,7 @@ export default class ShapeController {
       if (!timestamp) {
         return response.status(400).json({
           success: false,
-          message: 'timestamp is required'
+          message: 'timestamp is required',
         })
       }
 
@@ -581,7 +590,7 @@ export default class ShapeController {
       if (isNaN(targetDate.getTime())) {
         return response.status(400).json({
           success: false,
-          message: 'Invalid timestamp format'
+          message: 'Invalid timestamp format',
         })
       }
 
@@ -590,14 +599,24 @@ export default class ShapeController {
       const shapesWithHistoricalPollution = await Promise.all(
         shapes.map(async (shape) => {
           try {
-            const historicalSensorsInShape = await ShapeService.getSensorsInShapeAtTime(shape.id, targetDate)
-            
+            const historicalSensorsInShape = await ShapeService.getSensorsInShapeAtTime(
+              shape.id,
+              targetDate
+            )
+
             const detailedSensors = await Promise.all(
               historicalSensorsInShape.map(async (sensor) => {
                 try {
-                  const sensorDetails = await SensorService.getSensorHistoricalStateById(sensor.sensorId, request.user!.id, targetDate)
-                  const closestReading = await SensorReadingService.getClosestReading(sensor.sensorId, targetDate)
-                  
+                  const sensorDetails = await SensorService.getSensorHistoricalStateById(
+                    sensor.sensorId,
+                    request.user!.id,
+                    targetDate
+                  )
+                  const closestReading = await SensorReadingService.getClosestReading(
+                    sensor.sensorId,
+                    targetDate
+                  )
+
                   return {
                     id: sensor.sensorId,
                     sensorId: sensor.sensorName,
@@ -606,7 +625,7 @@ export default class ShapeController {
                     latitude: sensorDetails?.latitude,
                     longitude: sensorDetails?.longitude,
                     currentReading: closestReading,
-                    historicalTimestamp: targetDate.toISOString()
+                    historicalTimestamp: targetDate.toISOString(),
                   }
                 } catch (error) {
                   return {
@@ -615,18 +634,19 @@ export default class ShapeController {
                     type: 'AIR_QUALITY',
                     active: false,
                     currentReading: null,
-                    historicalTimestamp: targetDate.toISOString()
+                    historicalTimestamp: targetDate.toISOString(),
                   }
                 }
               })
             )
 
-            const historicalPollutionAnalysis = await PollutionAnalysisService.analyzeHistoricalShapePollution(
-              shape.id,
-              shape.name,
-              detailedSensors,
-              targetDate
-            )
+            const historicalPollutionAnalysis =
+              await PollutionAnalysisService.analyzeHistoricalShapePollution(
+                shape.id,
+                shape.name,
+                detailedSensors,
+                targetDate
+              )
 
             return {
               ...shape,
@@ -634,9 +654,9 @@ export default class ShapeController {
               riskScore: historicalPollutionAnalysis.riskScore,
               alertLevel: historicalPollutionAnalysis.alertLevel,
               sensorCount: detailedSensors.length,
-              activeSensorCount: detailedSensors.filter(s => s.active).length,
+              activeSensorCount: detailedSensors.filter((s) => s.active).length,
               historicalTimestamp: targetDate.toISOString(),
-              sensors: detailedSensors
+              sensors: detailedSensors,
             }
           } catch (error) {
             console.warn(`Failed to analyze historical pollution for shape ${shape.id}:`, error)
@@ -648,7 +668,7 @@ export default class ShapeController {
               sensorCount: 0,
               activeSensorCount: 0,
               historicalTimestamp: targetDate.toISOString(),
-              sensors: []
+              sensors: [],
             }
           }
         })
@@ -659,15 +679,15 @@ export default class ShapeController {
         data: {
           shapes: shapesWithHistoricalPollution,
           timestamp: targetDate.toISOString(),
-          count: shapesWithHistoricalPollution.length
-        }
+          count: shapesWithHistoricalPollution.length,
+        },
       })
     } catch (error) {
       console.error('Failed to get historical shapes:', error)
       return response.status(500).json({
         success: false,
         message: 'Failed to get historical shapes',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
       })
     }
   }

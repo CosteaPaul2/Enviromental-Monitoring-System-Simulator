@@ -73,7 +73,10 @@ export default function SensorsPage() {
               readingsMap.set(sensor.id, readingResponse.data.reading);
             }
           } catch (error) {
-            console.warn(`Failed to load reading for sensor ${sensor.id}`);
+            console.warn(
+              `Failed to load reading for sensor ${sensor.id}`,
+              error,
+            );
           }
         }
         setSensorReadings(readingsMap);
@@ -110,7 +113,6 @@ export default function SensorsPage() {
         setIsCreateModalOpen(false);
         resetForm();
         loadSensors();
-        // Trigger updates across the app (map page, etc.)
         triggerAllUpdates();
       } else {
         setAlertMessage({ type: "error", message: "Failed to create sensor" });
@@ -147,7 +149,6 @@ export default function SensorsPage() {
           message: `Sensor ${sensor.active ? "deactivated" : "activated"} successfully!`,
         });
         loadSensors();
-        // Trigger updates across the app (map page shapes, etc.)
         triggerAllUpdates();
       } else {
         setAlertMessage({ type: "error", message: "Failed to toggle sensor" });

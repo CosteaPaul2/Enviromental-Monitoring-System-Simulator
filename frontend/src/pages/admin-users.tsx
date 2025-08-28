@@ -21,10 +21,14 @@ import {
   ModalFooter,
 } from "@heroui/modal";
 import { Pagination } from "@heroui/pagination";
-import { formatDistanceToNow } from 'date-fns'
-import AdminLayout from '@/layouts/AdminLayout'
-import { adminApi, AdminUser } from '@/lib/adminApi'
-import { useSuccessNotification, useErrorNotification } from '@/contexts/NotificationContext'
+import { formatDistanceToNow } from "date-fns";
+
+import AdminLayout from "@/layouts/AdminLayout";
+import { adminApi, AdminUser } from "@/lib/adminApi";
+import {
+  useSuccessNotification,
+  useErrorNotification,
+} from "@/contexts/NotificationContext";
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -168,10 +172,16 @@ export default function AdminUsersPage() {
               />
               <Select
                 className="w-48"
-                items={[{ key: '', label: 'All Roles' }, { key: 'USER', label: 'User' }, { key: 'ADMIN', label: 'Admin' }]}
+                items={[
+                  { key: "", label: "All Roles" },
+                  { key: "USER", label: "User" },
+                  { key: "ADMIN", label: "Admin" },
+                ]}
                 placeholder="Filter by role"
                 selectedKeys={roleFilter ? [roleFilter] : []}
-                onSelectionChange={(value) => setRoleFilter(Array.from(value)[0] as string || '')}
+                onSelectionChange={(value) =>
+                  setRoleFilter((Array.from(value)[0] as string) || "")
+                }
               >
                 {(item) => <SelectItem key={item.key}>{item.label}</SelectItem>}
               </Select>
@@ -214,7 +224,7 @@ export default function AdminUsersPage() {
                     </TableCell>
                     <TableCell>
                       <Chip
-                        color={user.role === 'ADMIN' ? 'warning' : 'primary'}
+                        color={user.role === "ADMIN" ? "warning" : "primary"}
                         size="sm"
                         variant="flat"
                       >
@@ -308,11 +318,17 @@ export default function AdminUsersPage() {
               }
             />
             <Select
-              items={[{ key: 'USER', label: 'User' }, { key: 'ADMIN', label: 'Admin' }]}
+              items={[
+                { key: "USER", label: "User" },
+                { key: "ADMIN", label: "Admin" },
+              ]}
               label="Role"
               selectedKeys={[newUser.role]}
-              onSelectionChange={(value) => 
-                setNewUser({ ...newUser, role: Array.from(value)[0] as 'USER' | 'ADMIN' })
+              onSelectionChange={(value) =>
+                setNewUser({
+                  ...newUser,
+                  role: Array.from(value)[0] as "USER" | "ADMIN",
+                })
               }
             >
               {(item) => <SelectItem key={item.key}>{item.label}</SelectItem>}
@@ -360,11 +376,17 @@ export default function AdminUsersPage() {
                   }
                 />
                 <Select
-                  items={[{ key: 'USER', label: 'User' }, { key: 'ADMIN', label: 'Admin' }]}
+                  items={[
+                    { key: "USER", label: "User" },
+                    { key: "ADMIN", label: "Admin" },
+                  ]}
                   label="Role"
                   selectedKeys={[selectedUser.role]}
-                  onSelectionChange={(value) => 
-                    setSelectedUser({ ...selectedUser, role: Array.from(value)[0] as 'USER' | 'ADMIN' })
+                  onSelectionChange={(value) =>
+                    setSelectedUser({
+                      ...selectedUser,
+                      role: Array.from(value)[0] as "USER" | "ADMIN",
+                    })
                   }
                 >
                   {(item) => (

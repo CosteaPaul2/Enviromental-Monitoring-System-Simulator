@@ -87,7 +87,6 @@ export default function SensorPanel({
           </div>
         ) : (
           <>
-            {/* Sensors on Map */}
             {sensorsWithLocation.length > 0 && (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -140,10 +139,7 @@ export default function SensorPanel({
                             </div>
 
                             <div className="flex-shrink-0 w-16 flex justify-end items-center gap-1">
-                              <div className="w-6">
-                                {" "}
-                                {/* Spacer for alignment with unplaced sensors */}
-                              </div>
+                              <div className="w-6"> </div>
                               <Tooltip
                                 content={
                                   sensor.active
@@ -172,7 +168,6 @@ export default function SensorPanel({
               </div>
             )}
 
-            {/* Sensors needing placement */}
             {sensorsWithoutLocation.length > 0 && (
               <>
                 {sensorsWithLocation.length > 0 && <Divider />}
@@ -267,7 +262,6 @@ export default function SensorPanel({
               </>
             )}
 
-            {/* Empty state */}
             {sensors.length === 0 && (
               <div className="text-center py-8">
                 <div className="p-4 bg-content2 rounded-full w-fit mx-auto mb-4">
@@ -294,7 +288,6 @@ export default function SensorPanel({
               </div>
             )}
 
-            {/* Selected sensor info */}
             {selectedSensor && (
               <>
                 <Divider />

@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 
 const api = axios.create({
   baseURL: "http://localhost:3333",
-  timeout: 15000, // Longer timeout for spatial analysis
+  timeout: 30000, // Even longer timeout for spatial analysis
   headers: {
     "Content-Type": "application/json",
   },
@@ -11,9 +11,11 @@ const api = axios.create({
 
 api.interceptors.request.use((config) => {
   const token = Cookies.get("access_token");
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
   return config;
 });
 
@@ -64,7 +66,7 @@ export interface Infrastructure {
 }
 
 export interface EnvironmentalContext {
-  urbanDensity: 'low' | 'medium' | 'high';
+  urbanDensity: "low" | "medium" | "high";
   zoneClassification: string;
   accessibilityIndex: number;
   vulnerabilityIndex: number;
@@ -89,7 +91,7 @@ export interface SensorsData {
 }
 
 export interface RiskAssessment {
-  level: 'low' | 'medium' | 'high' | 'critical';
+  level: "low" | "medium" | "high" | "critical";
   score: number;
   factors: string[];
   recommendations: string[];
@@ -116,7 +118,7 @@ export interface AnalyzeZoneRequest {
 
 export const spatialAnalysisApi = {
   analyzeClientZone: async (
-    request: AnalyzeZoneRequest
+    request: AnalyzeZoneRequest,
   ): Promise<{
     success: boolean;
     data?: ClientZoneAnalysis;
@@ -124,9 +126,11 @@ export const spatialAnalysisApi = {
   }> => {
     try {
       const response = await api.post("/analysis/zone", request);
+
       return response.data;
     } catch (error: any) {
       console.error("Failed to analyze client zone:", error);
+
       return {
         success: false,
         message: error.response?.data?.message || "Failed to analyze zone",
@@ -140,6 +144,7 @@ export const formatPopulation = (population: PopulationData): string => {
   if (population.total > 1000) {
     return `${(population.total / 1000).toFixed(1)}K people`;
   }
+
   return `${population.total} people`;
 };
 
@@ -151,77 +156,108 @@ export const formatArea = (area: number): string => {
   if (area >= 1) {
     return `${area.toFixed(2)} km²`;
   }
+
   return `${(area * 1000).toFixed(0)} m²`;
 };
 
-export const getRiskColor = (level: RiskAssessment['level']): string => {
+export const getRiskColor = (level: RiskAssessment["level"]): string => {
   switch (level) {
-    case 'low': return '#22c55e';      // Green
-    case 'medium': return '#f59e0b';   // Yellow/Orange  
-    case 'high': return '#ef4444';     // Red
-    case 'critical': return '#7c2d12'; // Dark red
-    default: return '#6b7280';         // Gray
+    case "low":
+      return "#22c55e"; // Green
+    case "medium":
+      return "#f59e0b"; // Yellow/Orange
+    case "high":
+      return "#ef4444"; // Red
+    case "critical":
+      return "#7c2d12"; // Dark red
+    default:
+      return "#6b7280"; // Gray
   }
 };
 
-export const getRiskIcon = (level: RiskAssessment['level']): string => {
+export const getRiskIcon = (level: RiskAssessment["level"]): string => {
   switch (level) {
-    case 'low': return 'tabler:shield-check';
-    case 'medium': return 'tabler:shield-exclamation';
-    case 'high': return 'tabler:shield-x';
-    case 'critical': return 'tabler:alert-triangle';
-    default: return 'tabler:shield';
+    case "low":
+      return "tabler:shield-check";
+    case "medium":
+      return "tabler:shield-exclamation";
+    case "high":
+      return "tabler:shield-x";
+    case "critical":
+      return "tabler:alert-triangle";
+    default:
+      return "tabler:shield";
   }
 };
 
-export const getUrbanDensityIcon = (density: EnvironmentalContext['urbanDensity']): string => {
+export const getUrbanDensityIcon = (
+  density: EnvironmentalContext["urbanDensity"],
+): string => {
   switch (density) {
-    case 'low': return 'tabler:building';
-    case 'medium': return 'tabler:buildings';
-    case 'high': return 'tabler:building-skyscraper';
-    default: return 'tabler:building';
+    case "low":
+      return "tabler:building";
+    case "medium":
+      return "tabler:buildings";
+    case "high":
+      return "tabler:building-skyscraper";
+    default:
+      return "tabler:building";
   }
 };
 
-export const getUrbanDensityColor = (density: EnvironmentalContext['urbanDensity']): string => {
+export const getUrbanDensityColor = (
+  density: EnvironmentalContext["urbanDensity"],
+): string => {
   switch (density) {
-    case 'low': return '#22c55e';     // Green
-    case 'medium': return '#f59e0b';  // Yellow
-    case 'high': return '#ef4444';    // Red  
-    default: return '#6b7280';        // Gray
+    case "low":
+      return "#22c55e"; // Green
+    case "medium":
+      return "#f59e0b"; // Yellow
+    case "high":
+      return "#ef4444"; // Red
+    default:
+      return "#6b7280"; // Gray
   }
 };
 
 // Generate summary text for quick overview
 export const generateAnalysisSummary = (analysis: ZoneAnalysis): string => {
   const { population, infrastructure, riskAssessment } = analysis;
-  
+
   const popText = formatPopulation(population);
-  const riskText = riskAssessment.level.charAt(0).toUpperCase() + riskAssessment.level.slice(1);
-  const healthcareText = infrastructure.healthcare.hospitals > 0 
-    ? `${infrastructure.healthcare.hospitals} hospital${infrastructure.healthcare.hospitals > 1 ? 's' : ''}`
-    : `${infrastructure.healthcare.clinics} clinic${infrastructure.healthcare.clinics !== 1 ? 's' : ''}`;
-    
-  return `${popText} • ${riskText} risk • ${healthcareText} • ${infrastructure.education.schools} school${infrastructure.education.schools !== 1 ? 's' : ''}`;
+  const riskText =
+    riskAssessment.level.charAt(0).toUpperCase() +
+    riskAssessment.level.slice(1);
+  const healthcareText =
+    infrastructure.healthcare.hospitals > 0
+      ? `${infrastructure.healthcare.hospitals} hospital${infrastructure.healthcare.hospitals > 1 ? "s" : ""}`
+      : `${infrastructure.healthcare.clinics} clinic${infrastructure.healthcare.clinics !== 1 ? "s" : ""}`;
+
+  return `${popText} • ${riskText} risk • ${healthcareText} • ${infrastructure.education.schools} school${infrastructure.education.schools !== 1 ? "s" : ""}`;
 };
 
 // Check if analysis indicates high-priority areas
 export const isHighPriorityArea = (analysis: ZoneAnalysis): boolean => {
-  return analysis.riskAssessment.level === 'high' || 
-         analysis.riskAssessment.level === 'critical' ||
-         analysis.population.demographics.vulnerable / analysis.population.total > 0.25;
+  return (
+    analysis.riskAssessment.level === "high" ||
+    analysis.riskAssessment.level === "critical" ||
+    analysis.population.demographics.vulnerable / analysis.population.total >
+      0.25
+  );
 };
 
 // Get priority alert message for high-priority areas
-export const getPriorityAlertMessage = (analysis: ZoneAnalysis): string | null => {
+export const getPriorityAlertMessage = (
+  analysis: ZoneAnalysis,
+): string | null => {
   if (!isHighPriorityArea(analysis)) return null;
-  
+
   const { population, riskAssessment } = analysis;
   const vulnerableCount = population.demographics.vulnerable;
-  
-  if (riskAssessment.level === 'critical') {
+
+  if (riskAssessment.level === "critical") {
     return `Critical area with ${vulnerableCount} vulnerable people - immediate attention required`;
-  } else if (riskAssessment.level === 'high') {
+  } else if (riskAssessment.level === "high") {
     return `High-risk area affecting ${population.total} people - enhanced monitoring recommended`;
   } else {
     return `${vulnerableCount} vulnerable people in this area - consider targeted safety measures`;
