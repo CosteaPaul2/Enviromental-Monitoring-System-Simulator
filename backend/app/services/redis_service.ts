@@ -33,7 +33,6 @@ export default class RedisService {
       }
       return false
     } catch (error) {
-      console.log(`Failed to publish to ${channel}:`, error)
       return false
     }
   }
@@ -45,11 +44,9 @@ export default class RedisService {
           const parsedData = JSON.parse(message)
           callback(parsedData)
         } catch (error) {
-          console.log(`Failed to parse message from ${channel}:`, error)
         }
       })
     } catch (error) {
-      console.log(`Failed to subscribe to ${channel}:`, error)
     }
   }
 
@@ -57,7 +54,6 @@ export default class RedisService {
     try {
       await redis.unsubscribe(channel)
     } catch (error) {
-      console.log(`Failed to unsubscribe from ${channel}:`, error)
     }
   }
 

@@ -95,7 +95,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (response.data.user && response.data.accessToken) {
         const { user: userData, accessToken } = response.data;
 
-        console.log("🔑 Storing token:", accessToken?.substring(0, 20) + "...");
         Cookies.set("access_token", accessToken, {
           expires: 1,
           sameSite: "strict",
@@ -106,12 +105,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         });
 
         // Verify the token was stored
-        const storedToken = Cookies.get("access_token");
 
-        console.log(
-          "🔑 Token verification:",
-          storedToken ? "Stored successfully" : "Failed to store",
-        );
 
         setUser(userData);
 

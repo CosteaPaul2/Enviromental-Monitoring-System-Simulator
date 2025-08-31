@@ -88,7 +88,6 @@ export default class ShapeController {
               activeSensorCount: detailedSensors.filter((s) => s.active).length,
             }
           } catch (error) {
-            console.warn(`Failed to analyze pollution for shape ${shape.id}:`, error)
             return {
               ...shape,
               pollutionLevel: 'no-data',
@@ -519,7 +518,6 @@ export default class ShapeController {
               user: sensorDetails?.user,
             }
           } catch (error) {
-            console.warn(`Failed to get details for sensor ${sensor.sensorId}:`, error)
             return {
               id: sensor.sensorId,
               sensorId: sensor.sensorName,
@@ -559,7 +557,6 @@ export default class ShapeController {
         },
       })
     } catch (error) {
-      console.error('Failed to get shape details:', error)
       return response.status(500).json({
         success: false,
         message: 'Failed to get shape details',
@@ -659,7 +656,6 @@ export default class ShapeController {
               sensors: detailedSensors,
             }
           } catch (error) {
-            console.warn(`Failed to analyze historical pollution for shape ${shape.id}:`, error)
             return {
               ...shape,
               pollutionLevel: 'no-data',
@@ -683,7 +679,6 @@ export default class ShapeController {
         },
       })
     } catch (error) {
-      console.error('Failed to get historical shapes:', error)
       return response.status(500).json({
         success: false,
         message: 'Failed to get historical shapes',

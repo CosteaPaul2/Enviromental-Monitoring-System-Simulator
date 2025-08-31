@@ -47,18 +47,13 @@ new Ignitor(APP_ROOT, { importer: IMPORTER })
         // Check Redis connection
         const redisStatus = await RedisService.getConnectionStatus()
         if (redisStatus) {
-          console.log('✅ Redis connected successfully')
-        } else {
-          console.warn('⚠️ Redis connection failed - some features may not work')
         }
 
         // Start sensor reading subscriber
         const readingSubscriber = SensorReadingSubscriber.getInstance()
         await readingSubscriber.start()
 
-        console.log('🚀 All services initialized successfully')
       } catch (error) {
-        console.error('❌ Failed to initialize services:', error)
         process.exit(1)
       }
     })
@@ -73,9 +68,7 @@ new Ignitor(APP_ROOT, { importer: IMPORTER })
         await readingSubscriber.stop()
 
         await PrismaService.disconnect()
-        console.log('👋 Application shutdown complete')
       } catch (error) {
-        console.error('❌ Error during shutdown:', error)
       }
     })
 

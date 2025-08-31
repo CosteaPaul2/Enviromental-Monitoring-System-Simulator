@@ -25,7 +25,6 @@ export default class SensorReadingSubscriber {
 
   public async start(): Promise<void> {
     if (this.isSubscribed) {
-      console.log('Reading subscriber already running')
       return
     }
 
@@ -57,7 +56,6 @@ export default class SensorReadingSubscriber {
       }
       const sensorUnit = event.unit as SensorUnit
       if (!Object.values(SensorUnit).includes(sensorUnit)) {
-        console.log('BACKEND Invalid sensor unit:', event.unit)
         return
       }
 
@@ -69,10 +67,10 @@ export default class SensorReadingSubscriber {
       })
 
       if (reading) {
-        console.log(` Saved reading for sensor ${event.sensorId}: ${event.value} ${event.unit}`)
+        // Reading saved successfully
       }
     } catch (error) {
-      console.log('Error processing sensor reading:', error)
+      // Error processing sensor reading
     }
   }
 

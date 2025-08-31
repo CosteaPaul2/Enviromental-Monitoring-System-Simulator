@@ -36,7 +36,6 @@ export default function SensorPanel({
         setSensors(response.data.sensors);
       }
     } catch (error) {
-      console.error("Failed to load sensors:", error);
     } finally {
       setLoading(false);
     }
@@ -54,7 +53,6 @@ export default function SensorPanel({
         await loadSensors();
       }
     } catch (error) {
-      console.error("Failed to toggle sensor:", error);
     }
   };
 

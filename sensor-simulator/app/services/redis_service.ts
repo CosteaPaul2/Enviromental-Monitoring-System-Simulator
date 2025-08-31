@@ -36,12 +36,10 @@ export default class RedisService {
             const result = await redis.publish(channel, serializedData)
             
             if (result > 0) {
-                console.log(`Published to ${channel}:`, data)
                 return true
             }
             return false
         } catch (error) {
-            console.log(`Failed to publish to ${channel}:`, error)
             return false
         }
     }
@@ -53,21 +51,16 @@ export default class RedisService {
                     const parsedData = JSON.parse(message)
                     callback(parsedData)
                 } catch (error) {
-                    console.log('Error parsing data')
                 }
             })
-            console.log(`Subscribed to channel: ${channel}`)
         } catch (error) {
-            console.log(`Failed to subscribe to ${channel}:`, error)
         }
     }
 
     static async unsubscribe(channel: RedisChannels): Promise<void> {
         try {
             await redis.unsubscribe(channel)
-            console.log(`Unsubscribed from channel: ${channel}`)
         } catch (error) {
-            console.log(`Failed to unsubscribe from ${channel}`, error)
         }
     }
 
@@ -90,7 +83,6 @@ export default class RedisService {
             await redis.ping()
             return true
         } catch (error) {
-            console.log('Redis connection check failed:', error)
             return false
         }
     }
@@ -98,9 +90,7 @@ export default class RedisService {
     static async clearChannel(channel: RedisChannels): Promise<void> {
         try {
             await redis.del(channel)
-            console.log(`Cleared channel: ${channel}`)
         } catch (error) {
-            console.log(`Failed to clear channel ${channel}:`, error)
         }
     }
 } 

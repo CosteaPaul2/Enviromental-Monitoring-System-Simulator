@@ -73,16 +73,11 @@ export default function SensorsPage() {
               readingsMap.set(sensor.id, readingResponse.data.reading);
             }
           } catch (error) {
-            console.warn(
-              `Failed to load reading for sensor ${sensor.id}`,
-              error,
-            );
           }
         }
         setSensorReadings(readingsMap);
       }
     } catch (error) {
-      console.error("Failed to load sensors:", error);
       setAlertMessage({ type: "error", message: "Failed to load sensors" });
     } finally {
       setLoading(false);

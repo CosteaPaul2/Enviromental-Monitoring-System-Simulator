@@ -22,7 +22,6 @@ export default class AdminMiddleware {
 
       await next()
     } catch (error) {
-      console.error('Admin middleware error:', error)
       return response.status(403).json({
         message: 'Access denied',
         code: 'ACCESS_DENIED',

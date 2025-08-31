@@ -25,18 +25,15 @@ export function AppUpdateProvider({ children }: AppUpdateProviderProps) {
 
   const triggerSensorUpdate = () => {
     setSensorUpdateTrigger((prev) => prev + 1);
-    console.log("🔄 Triggered sensor update");
   };
 
   const triggerShapeUpdate = () => {
     setShapeUpdateTrigger((prev) => prev + 1);
-    console.log("🔄 Triggered shape update");
   };
 
   const triggerAllUpdates = () => {
     setSensorUpdateTrigger((prev) => prev + 1);
     setShapeUpdateTrigger((prev) => prev + 1);
-    console.log("🔄 Triggered all updates");
   };
 
   const value: AppUpdateContextType = {

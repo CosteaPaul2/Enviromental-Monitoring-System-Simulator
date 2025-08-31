@@ -47,7 +47,6 @@ export default class AuthService {
         role: user.role,
       }
     } catch (error) {
-      console.error('Error during user registration:', error)
       throw error
     }
   }
@@ -90,7 +89,6 @@ export default class AuthService {
         accessToken,
       }
     } catch (error) {
-      console.error('Error during user login:', error)
       throw error
     }
   }
@@ -124,7 +122,6 @@ export default class AuthService {
         role: tokenRecord.user.role,
       }
     } catch (error) {
-      console.error('Error during token validation:', error)
       return null
     }
   }
@@ -136,7 +133,6 @@ export default class AuthService {
       })
       return true
     } catch (error) {
-      console.error('Error during logout:', error)
       return false
     }
   }

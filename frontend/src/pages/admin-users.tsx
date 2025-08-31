@@ -69,7 +69,6 @@ export default function AdminUsersPage() {
         setTotalPages(response.data.pagination.pages);
       }
     } catch (error) {
-      console.error("Failed to fetch users:", error);
       addErrorNotification("Failed to Load", "Could not fetch users");
     } finally {
       setLoading(false);
@@ -90,7 +89,6 @@ export default function AdminUsersPage() {
         fetchUsers();
       }
     } catch (error) {
-      console.error("Failed to create user:", error);
       addErrorNotification("Creation Failed", "Could not create user");
     }
   };
@@ -115,7 +113,6 @@ export default function AdminUsersPage() {
         fetchUsers();
       }
     } catch (error) {
-      console.error("Failed to update user:", error);
       addErrorNotification("Update Failed", "Could not update user");
     }
   };
@@ -133,7 +130,6 @@ export default function AdminUsersPage() {
           fetchUsers();
         }
       } catch (error) {
-        console.error("Failed to delete user:", error);
         addErrorNotification("Deletion Failed", "Could not delete user");
       }
     }

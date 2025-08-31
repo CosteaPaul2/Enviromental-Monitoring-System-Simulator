@@ -84,8 +84,6 @@ export const useMapData = ({
             name: shape.name,
           };
         } catch (err) {
-          console.error("Error processing shape:", shape, err);
-
           return null;
         }
       })
@@ -113,7 +111,6 @@ export const useMapData = ({
         setSavedShapes(processedShapes);
       }
     } catch (error) {
-      console.error("Failed to load shapes:", error);
       setError("Failed to load shapes");
 
       try {
@@ -123,7 +120,6 @@ export const useMapData = ({
           setSavedShapes([]);
         }
       } catch (fallbackError) {
-        console.error("Fallback also failed:", fallbackError);
         setError("Failed to load shapes data");
       }
     } finally {

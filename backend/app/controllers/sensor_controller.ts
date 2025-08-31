@@ -116,7 +116,6 @@ export default class SensorController {
         message: 'Sensor status toggled successfully',
       })
     } catch (error) {
-      console.log('Failed to toggle sensor', error)
 
       if (error.message && error.message.includes('not found')) {
         return response.status(404).json({

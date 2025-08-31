@@ -39,7 +39,6 @@ export default class AuthMiddleware {
 
       await next()
     } catch (error) {
-      console.error('Authentication middleware error:', error)
       return response.status(401).json({
         message: 'Authentication failed',
         code: 'AUTH_ERROR',

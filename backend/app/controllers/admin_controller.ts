@@ -5,7 +5,6 @@ import bcrypt from 'bcrypt'
 export default class AdminController {
   private prisma = PrismaService.client
 
-  // Dashboard Stats
   public async getDashboardStats({ response }: HttpContext) {
     try {
       await PrismaService.ensureConnection()
@@ -20,7 +19,6 @@ export default class AdminController {
           this.prisma.user.count({ where: { role: 'ADMIN' } }),
         ])
 
-      // Get recent activity (last 24 hours)
       const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000)
       const [newUsersToday, newSensorsToday, newShapesToday, readingsToday] = await Promise.all([
         this.prisma.user.count({ where: { createdAt: { gte: yesterday } } }),
@@ -50,7 +48,6 @@ export default class AdminController {
         },
       })
     } catch (error) {
-      console.error('Failed to get dashboard stats:', error)
       return response.status(500).json({
         success: false,
         message: 'Failed to fetch dashboard statistics',
@@ -59,7 +56,6 @@ export default class AdminController {
     }
   }
 
-  // User Management
   public async getUsers({ request, response }: HttpContext) {
     try {
       await PrismaService.ensureConnection()
@@ -118,7 +114,6 @@ export default class AdminController {
         },
       })
     } catch (error) {
-      console.error('Failed to get users:', error)
       return response.status(500).json({
         success: false,
         message: 'Failed to fetch users',
@@ -184,7 +179,6 @@ export default class AdminController {
         data: { user },
       })
     } catch (error) {
-      console.error('Failed to create user:', error)
       return response.status(500).json({
         success: false,
         message: 'Failed to create user',
@@ -234,7 +228,6 @@ export default class AdminController {
           message: 'User not found',
         })
       }
-      console.error('Failed to update user:', error)
       return response.status(500).json({
         success: false,
         message: 'Failed to update user',
@@ -247,7 +240,6 @@ export default class AdminController {
     try {
       const userId = params.id
 
-      // Prevent admin from deleting themselves
       if (userId === request.user?.id) {
         return response.status(400).json({
           success: false,
@@ -270,7 +262,6 @@ export default class AdminController {
           message: 'User not found',
         })
       }
-      console.error('Failed to delete user:', error)
       return response.status(500).json({
         success: false,
         message: 'Failed to delete user',
@@ -279,7 +270,6 @@ export default class AdminController {
     }
   }
 
-  // Sensor Management
   public async getAllSensors({ request, response }: HttpContext) {
     try {
       await PrismaService.ensureConnection()
@@ -339,7 +329,6 @@ export default class AdminController {
         },
       })
     } catch (error) {
-      console.error('Failed to get all sensors:', error)
       return response.status(500).json({
         success: false,
         message: 'Failed to fetch sensors',
@@ -367,7 +356,6 @@ export default class AdminController {
           message: 'Sensor not found',
         })
       }
-      console.error('Failed to delete sensor:', error)
       return response.status(500).json({
         success: false,
         message: 'Failed to delete sensor',
@@ -376,7 +364,6 @@ export default class AdminController {
     }
   }
 
-  // Shape Management
   public async getAllShapes({ request, response }: HttpContext) {
     try {
       await PrismaService.ensureConnection()
@@ -386,7 +373,6 @@ export default class AdminController {
       const search = request.qs().search || ''
       const type = request.qs().type || ''
 
-      // Build WHERE conditions for raw query
       let whereConditions = '1=1'
       const queryParams: any[] = []
       let paramIndex = 1
@@ -402,7 +388,6 @@ export default class AdminController {
         paramIndex++
       }
 
-      // Add pagination parameters
       const offsetParam = (page - 1) * limit
 
       const [shapes, totalResult] = await Promise.all([
@@ -450,7 +435,6 @@ export default class AdminController {
         ),
       ])
 
-      // Transform the result to match the expected format
       const formattedShapes = (shapes as any[]).map((shape: any) => ({
         id: shape.id,
         name: shape.name,
@@ -484,7 +468,6 @@ export default class AdminController {
         },
       })
     } catch (error) {
-      console.error('Failed to get all shapes:', error)
       return response.status(500).json({
         success: false,
         message: 'Failed to fetch shapes',
@@ -518,7 +501,6 @@ export default class AdminController {
         })
       }
 
-      // Get sensors within this shape with detailed info
       const sensorsInShape = (await this.prisma.$queryRaw`
         SELECT 
           s.id,
@@ -539,7 +521,6 @@ export default class AdminController {
         ORDER BY s."createdAt" DESC
       `) as any[]
 
-      // Get geometry
       const shapeWithGeometry = (await this.prisma.$queryRaw`
         SELECT ST_AsGeoJSON(geometry) as geometry
         FROM "Shape"
@@ -562,7 +543,6 @@ export default class AdminController {
         },
       })
     } catch (error) {
-      console.error('Failed to get shape details:', error)
       return response.status(500).json({
         success: false,
         message: 'Failed to fetch shape details',
@@ -590,7 +570,6 @@ export default class AdminController {
           message: 'Shape not found',
         })
       }
-      console.error('Failed to delete shape:', error)
       return response.status(500).json({
         success: false,
         message: 'Failed to delete shape',
@@ -599,12 +578,10 @@ export default class AdminController {
     }
   }
 
-  // System Analytics
   public async getSystemAnalytics({ response }: HttpContext) {
     try {
       await PrismaService.ensureConnection()
 
-      // Get sensor readings over time (last 30 days)
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
 
       const readingsOverTime = await this.prisma.$queryRaw`
@@ -616,8 +593,6 @@ export default class AdminController {
         GROUP BY DATE(timestamp)
         ORDER BY date ASC
       `
-
-      // Get sensor type distribution
       const sensorTypes = await this.prisma.sensor.groupBy({
         by: ['type'],
         _count: {
@@ -625,7 +600,6 @@ export default class AdminController {
         },
       })
 
-      // Get user registration over time (last 30 days)
       const userRegistrations = await this.prisma.$queryRaw`
         SELECT 
           DATE("createdAt") as date,
@@ -645,7 +619,6 @@ export default class AdminController {
         },
       })
     } catch (error) {
-      console.error('Failed to get system analytics:', error)
       return response.status(500).json({
         success: false,
         message: 'Failed to fetch system analytics',

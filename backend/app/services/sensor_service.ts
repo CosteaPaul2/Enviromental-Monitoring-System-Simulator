@@ -1,7 +1,6 @@
 import prismaService from '#services/prisma_service'
 import { SensorType } from '@prisma/client'
 import RedisService from '#services/redis_service'
-import ShapeService from '#services/shape_service'
 
 interface CreateSensorData {
   sensorId: string
@@ -82,7 +81,6 @@ export default class SensorService {
         createdAt: sensor.createdAt,
       })
 
-      console.log(`Sensor created: ${sensor.sensorId} for user ${sensor.userId}`)
 
       return {
         ...sensor,
@@ -90,7 +88,6 @@ export default class SensorService {
         longitude: null,
       }
     } catch (error) {
-      console.log('Failed to create sensor:', error)
       throw error
     }
   }
@@ -138,7 +135,6 @@ export default class SensorService {
               longitude = locationResult[0].lng
             }
           } catch (error) {
-            console.warn(`Failed to extract location for sensor ${sensor.id}:`, error)
           }
 
           return {
@@ -158,7 +154,6 @@ export default class SensorService {
 
       return sensorsWithLocation
     } catch (error) {
-      console.error('Failed to get sensors for user:', error)
       throw error
     }
   }
@@ -185,7 +180,6 @@ export default class SensorService {
 
       return sensor
     } catch (error) {
-      console.error('Failed to get sensor by ID:', error)
       throw error
     }
   }
@@ -212,7 +206,6 @@ export default class SensorService {
 
       return sensor
     } catch (error) {
-      console.error('Failed to get sensor by database ID:', error)
       throw error
     }
   }
@@ -250,7 +243,6 @@ export default class SensorService {
 
       return true
     } catch (error) {
-      console.log('Failed to toggle sensor', error)
       throw error
     }
   }
@@ -277,7 +269,6 @@ export default class SensorService {
 
       return sensors
     } catch (error) {
-      console.error('Failed to get all active sensors:', error)
       throw error
     }
   }
@@ -312,7 +303,6 @@ export default class SensorService {
       })
 
       if (!sensor) {
-        console.log(`Sensor ${sensorId} not found for user ${userId}`)
         return false
       }
 
@@ -322,21 +312,11 @@ export default class SensorService {
       WHERE id = ${sensor.id}`
 
       try {
-        const containingShapes = await ShapeService.getShapesContainingSensorBySensorId(
-          sensorId,
-          userId
-        )
-        console.log(
-          `Sensor ${sensorId} location updated. Found in ${containingShapes.length} shapes:`,
-          containingShapes.map((s) => s.shapeName).join(', ')
-        )
       } catch (error) {
-        console.warn('Failed to check shape containment after sensor location update:', error)
       }
 
       return true
     } catch (error) {
-      console.log(error)
       return false
     }
   }
@@ -386,7 +366,6 @@ export default class SensorService {
         },
       }))
     } catch (error) {
-      console.error('Error getting historical sensors:', error)
       throw error
     }
   }
@@ -443,7 +422,6 @@ export default class SensorService {
         },
       }
     } catch (error) {
-      console.error('Error getting historical sensor by ID:', error)
       return null
     }
   }

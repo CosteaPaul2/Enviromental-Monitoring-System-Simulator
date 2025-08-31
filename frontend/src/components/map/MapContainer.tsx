@@ -34,20 +34,9 @@ const MapContainer = memo<MapContainerProps>(
     onSensorPlaced,
     onShapeCreated,
   }) => {
-    console.log("MapContainer received:", {
-      clientZones: clientZones.length,
-      operationResults: operationResults.length,
-      savedShapes: savedShapes.length,
-      isHistoricalMode,
-    });
 
     const allZones = [...clientZones, ...operationResults];
 
-    console.log(
-      "MapContainer allZones for SimpleMap:",
-      allZones.length,
-      allZones.map((z) => z.name),
-    );
 
     return (
       <div className="flex-1 relative">

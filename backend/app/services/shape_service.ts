@@ -60,14 +60,9 @@ export default class ShapeService {
         throw new Error('Failed to retrieve created shape')
       }
 
-      const containedSensors = await this.getSensorsInShape(shapeId)
-      console.log(
-        `Shape "${data.name}" created with ID ${shapeId}, contains ${containedSensors.length} sensors`
-      )
 
       return createdShape
     } catch (error) {
-      console.error('Failed to create shape:', error)
       throw error
     }
   }
@@ -83,7 +78,6 @@ export default class ShapeService {
 
       return shapes
     } catch (error) {
-      console.error('Failed to get shapes for user:', error)
       throw error
     }
   }
@@ -98,7 +92,6 @@ export default class ShapeService {
 
       return shape
     } catch (error) {
-      console.error('Failed to get shape by ID:', error)
       throw error
     }
   }
@@ -119,10 +112,8 @@ export default class ShapeService {
         where: { id: shapeId },
       })
 
-      console.log(`Shape "${shape.name}" (ID: ${shapeId}) deleted`)
       return true
     } catch (error) {
-      console.error('Failed to delete shape:', error)
       throw error
     }
   }
@@ -157,7 +148,6 @@ export default class ShapeService {
         geometry: JSON.parse(shape.geometry),
       }
     } catch (error) {
-      console.error('Failed to get shape with geometry:', error)
       throw error
     }
   }
@@ -189,7 +179,6 @@ export default class ShapeService {
         geometry: JSON.parse(shape.geometry),
       }))
     } catch (error) {
-      console.error('Failed to get shapes with geometry:', error)
       throw error
     }
   }
@@ -210,7 +199,6 @@ export default class ShapeService {
 
       return result || []
     } catch (error) {
-      console.error('Failed to get sensors in shape:', error)
       throw error
     }
   }
@@ -231,7 +219,6 @@ export default class ShapeService {
 
       return result || []
     } catch (error) {
-      console.error('Failed to get shapes containing sensor:', error)
       throw error
     }
   }
@@ -256,7 +243,6 @@ export default class ShapeService {
 
       return result || []
     } catch (error) {
-      console.error('Failed to get shapes containing sensor by sensorId:', error)
       throw error
     }
   }
@@ -285,10 +271,8 @@ export default class ShapeService {
         WHERE id = ${shapeId}
       `
 
-      console.log(`Shape "${shape.name}" geometry updated`)
       return true
     } catch (error) {
-      console.error('Failed to update shape geometry:', error)
       throw error
     }
   }
@@ -317,7 +301,6 @@ export default class ShapeService {
         geometry: shape.geometry ? JSON.parse(shape.geometry) : null,
       }))
     } catch (error) {
-      console.error('Error getting historical shapes:', error)
       throw error
     }
   }
@@ -343,7 +326,6 @@ export default class ShapeService {
 
       return result
     } catch (error) {
-      console.error('Error getting sensors in shape at time:', error)
       return []
     }
   }

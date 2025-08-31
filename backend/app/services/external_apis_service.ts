@@ -120,14 +120,14 @@ export default class ExternalApisService {
         return postcodeEstimate
       }
     } catch (error) {
-      console.warn('Postcode population estimation failed:', error)
+      // Postcode population estimation failed
     }
 
     try {
       const densityEstimate = await this.estimatePopulationByDensity(boundingBox, areaKm2)
       return densityEstimate
     } catch (error) {
-      console.warn('Density population estimation failed:', error)
+      // Density population estimation failed
     }
 
     return this.getBasicPopulationEstimate(boundingBox, areaKm2)
@@ -146,17 +146,12 @@ export default class ExternalApisService {
     const cacheKey = this.getCacheKey(boundingBox, category)
     const cached = this.cache.get(cacheKey)
     if (cached && Date.now() - cached.timestamp < this.cacheDuration) {
-      console.log(`📋 Using cached ${category} data`)
       return cached.data
     }
 
     for (const overpassUrl of this.overpassUrls) {
       for (let attempt = 1; attempt <= this.maxRetries; attempt++) {
         try {
-          console.log(
-            `🔍 Querying ${overpassUrl} for ${category} (attempt ${attempt}/${this.maxRetries})...`
-          )
-
           const response = await axios.post(overpassUrl, query, {
             timeout: this.requestTimeout,
             headers: {
@@ -187,11 +182,8 @@ export default class ExternalApisService {
 
           // Cache successful result
           this.cache.set(cacheKey, { data: facilities, timestamp: Date.now() })
-          console.log(`✅ Found ${facilities.length} ${category} facilities, cached for 30 minutes`)
           return facilities
         } catch (error: any) {
-          console.warn(`${overpassUrl} attempt ${attempt} failed:`, error.message)
-
           if (attempt < this.maxRetries) {
             await new Promise((resolve) => setTimeout(resolve, 1000))
           }
@@ -199,7 +191,6 @@ export default class ExternalApisService {
       }
     }
 
-    console.warn(`⚠️ All Overpass servers failed for ${category}, using fallback data`)
     return this.getFallbackFacilities(boundingBox, category)
   }
 
@@ -295,7 +286,6 @@ export default class ExternalApisService {
         break
     }
 
-    console.log(`📋 Using ${fallbacks.length} fallback ${category} facilities`)
     return fallbacks
   }
 
@@ -330,10 +320,6 @@ export default class ExternalApisService {
 
       const avgDensity = populationSamples.reduce((a, b) => a + b, 0) / populationSamples.length
       const estimatedPopulation = Math.round(areaKm2 * avgDensity)
-
-      console.log(
-        `📊 Postcode-based population estimate: ${estimatedPopulation} people (${avgDensity}/km²)`
-      )
 
       return {
         total: estimatedPopulation,
@@ -381,10 +367,6 @@ export default class ExternalApisService {
 
       const avgDensity = estimatedDensity / residentialData.length || 500
       const estimatedPopulation = Math.max(buildingScore, Math.round(areaKm2 * avgDensity))
-
-      console.log(
-        `🏠 Building-based population estimate: ${estimatedPopulation} people (${Math.round(avgDensity)}/km²)`
-      )
 
       return {
         total: estimatedPopulation,
@@ -437,10 +419,6 @@ export default class ExternalApisService {
     }
 
     const estimatedPopulation = Math.round(areaKm2 * baseDensity)
-
-    console.log(
-      `📍 London-aware population estimate: ${estimatedPopulation} people (${baseDensity}/km²)`
-    )
 
     return {
       total: estimatedPopulation,

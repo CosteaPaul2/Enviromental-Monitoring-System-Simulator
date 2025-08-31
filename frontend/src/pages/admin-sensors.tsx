@@ -56,7 +56,6 @@ export default function AdminSensorsPage() {
         setTotalPages(response.data.pagination.pages);
       }
     } catch (error) {
-      console.error("Failed to fetch sensors:", error);
       addErrorNotification("Failed to Load", "Could not fetch sensors");
     } finally {
       setLoading(false);
@@ -80,7 +79,6 @@ export default function AdminSensorsPage() {
           fetchSensors();
         }
       } catch (error) {
-        console.error("Failed to delete sensor:", error);
         addErrorNotification("Deletion Failed", "Could not delete sensor");
       }
     }

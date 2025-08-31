@@ -91,8 +91,6 @@ class PollutionMonitorService {
 
       return [];
     } catch (error) {
-      console.error("Failed to fetch pollution data:", error);
-
       return Array.from(this.pollutionCache.values());
     }
   }
@@ -167,10 +165,6 @@ class PollutionMonitorService {
             };
           }
         } catch (error) {
-          console.warn(
-            `Failed to get detailed data for shape ${alert.shapeId}:`,
-            error,
-          );
         }
 
         return alert;

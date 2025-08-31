@@ -14,15 +14,14 @@ import {
 import { formatDistanceToNow } from "date-fns";
 
 import DashboardLayout from "@/layouts/DashboardLayout";
-import { adminApi, AdminShape, ShapeDetails } from "@/lib/adminApi";
-import { sensorsApi, type Sensor } from "@/lib/sensorsApi";
+import { adminApi, AdminShape, ShapeDetails, SensorInShape } from "@/lib/adminApi";
 import {
   useSuccessNotification,
   useErrorNotification,
 } from "@/contexts/NotificationContext";
 
 interface ShapeWithSensors extends AdminShape {
-  sensorsInside: Sensor[];
+  sensorsInside: SensorInShape[];
   details?: ShapeDetails;
 }
 
@@ -118,7 +117,6 @@ export default function AnalyticsPage(): React.JSX.Element {
               details: details || undefined,
             } as ShapeWithSensors;
           } catch (error) {
-            console.warn(`Failed to fetch details for shape ${shape.id}:`, error);
             return {
               ...shape,
               sensorsInside: [],
@@ -129,7 +127,6 @@ export default function AnalyticsPage(): React.JSX.Element {
 
       setShapes(shapesWithDetails);
     } catch (error) {
-      console.error("Failed to fetch analytics data:", error);
       addErrorNotification("Failed to Load", "Could not fetch analytics data");
     } finally {
       setLoading(false);
@@ -144,7 +141,6 @@ export default function AnalyticsPage(): React.JSX.Element {
         duration: 2000,
       });
     } catch (error) {
-      console.error("Failed to refresh:", error);
       addErrorNotification("Refresh Failed", "Could not refresh analytics data");
     } finally {
       setRefreshing(false);
@@ -169,7 +165,6 @@ export default function AnalyticsPage(): React.JSX.Element {
         }
       }
     } catch (error) {
-      console.error("Failed to fetch shape details:", error);
       addErrorNotification("Failed to Load", "Could not fetch shape details");
       setIsDetailsModalOpen(false);
     } finally {

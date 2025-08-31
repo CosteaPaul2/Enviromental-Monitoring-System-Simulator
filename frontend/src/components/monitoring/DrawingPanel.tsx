@@ -305,12 +305,6 @@ export default function DrawingPanel({
                       size="sm"
                       variant="flat"
                       onPress={() => {
-                        console.log("🐛 Debug: Drawing panel state", {
-                          isDrawingMode,
-                          isAnalysisMode,
-                          selectedTool,
-                          drawnShapesCount,
-                        });
                         // Force tool activation for testing
                         if (!selectedTool) {
                           onToolSelect("rectangle");

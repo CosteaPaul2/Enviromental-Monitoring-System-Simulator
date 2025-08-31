@@ -64,7 +64,6 @@ export default function AdminShapesPage() {
         setTotalPages(response.data.pagination.pages);
       }
     } catch (error) {
-      console.error("Failed to fetch shapes:", error);
       addErrorNotification("Failed to Load", "Could not fetch shapes");
     } finally {
       setLoading(false);
@@ -82,7 +81,6 @@ export default function AdminShapesPage() {
         setSelectedShape(response.data.shape);
       }
     } catch (error) {
-      console.error("Failed to fetch shape details:", error);
       addErrorNotification("Failed to Load", "Could not fetch shape details");
       setIsDetailsModalOpen(false);
     } finally {
@@ -112,7 +110,6 @@ export default function AdminShapesPage() {
           fetchShapes();
         }
       } catch (error) {
-        console.error("Failed to delete shape:", error);
         addErrorNotification(
           "Deletion Failed",
           "Could not delete shape. It may contain active sensors.",

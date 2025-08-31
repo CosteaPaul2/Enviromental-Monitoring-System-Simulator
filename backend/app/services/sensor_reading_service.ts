@@ -167,7 +167,6 @@ export default class SensorReadingService {
 
       return reading
     } catch (error) {
-      console.error('Error getting closest reading:', error)
       return null
     }
   }

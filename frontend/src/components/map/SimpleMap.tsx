@@ -58,12 +58,6 @@ export default function SimpleMap({
   onClientZoneClick,
   isHistoricalMode = false,
 }: SimpleMapProps) {
-  console.log(
-    "SimpleMap received clientZones:",
-    clientZones?.length || 0,
-    clientZones?.map((z) => z.name) || [],
-  );
-  console.log("SimpleMap isHistoricalMode:", isHistoricalMode);
   const [isLoading, setIsLoading] = useState(true);
   const [sensors, setSensors] = useState<Sensor[]>([]);
   const [selectedShapeData, setSelectedShapeData] = useState<any>(null);
@@ -86,7 +80,6 @@ export default function SimpleMap({
         setSensors(response.data.sensors);
       }
     } catch (error) {
-      console.error("Failed to load sensors:", error);
     }
   }, [showSensors]);
 
@@ -113,17 +106,12 @@ export default function SimpleMap({
 
   const handleShapeClick = async (shapeId: number) => {
     if (selectedTool || selectedSensor) {
-      console.log("🚫 Shape click blocked - in drawing/placement mode:", {
-        selectedTool,
-        selectedSensor: selectedSensor?.sensorId,
-      });
 
       return;
     }
 
     try {
       setLoadingShapeDetails(true);
-      console.log("Fetching fresh details for shape:", shapeId);
 
       const response = await shapesApi.getShapeDetails(shapeId);
 
@@ -133,14 +121,12 @@ export default function SimpleMap({
           refreshSensors();
         }
       } else {
-        console.error("Failed to load shape details:", response);
         addErrorNotification(
           "Error Loading Shape",
           "Failed to load detailed pollution analysis for this area",
         );
       }
     } catch (error) {
-      console.error("Error loading shape details:", error);
     } finally {
       setLoadingShapeDetails(false);
     }
@@ -150,11 +136,6 @@ export default function SimpleMap({
   const effectiveSelectedSensor = isHistoricalMode ? null : selectedSensor;
   const effectiveClientZones = isHistoricalMode ? [] : clientZones;
 
-  console.log(
-    "SimpleMap effectiveClientZones (after historical filter):",
-    effectiveClientZones?.length || 0,
-    effectiveClientZones?.map((z) => z.name) || [],
-  );
 
   if (typeof window === "undefined") {
     return (

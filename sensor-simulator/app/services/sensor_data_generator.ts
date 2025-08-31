@@ -126,7 +126,6 @@ export default class SensorDataGenerator {
         pollutionScenario: scenario
       }
       this.sensorStates.set(sensorKey, state)
-      console.log(`🎲 New sensor ${sensorId} (${sensorType}): ${scenario} scenario, initial value: ${state.lastValue.toFixed(2)}`)
     }
     
     if (Math.random() < 0.02) {
@@ -134,7 +133,6 @@ export default class SensorDataGenerator {
       const newScenario = scenarios[Math.floor(Math.random() * scenarios.length)]
       if (newScenario !== state.pollutionScenario) {
         state.pollutionScenario = newScenario
-        console.log(`🔄 Sensor ${sensorId} switched to ${newScenario} scenario`)
       }
     }
     
@@ -167,7 +165,6 @@ export default class SensorDataGenerator {
     if (Math.random() < 0.05) {
       const eventIntensity = Math.random() * 0.5 + 0.5 
       pollutionEvent = config.variance * eventIntensity * (Math.random() > 0.5 ? 1 : -1)
-      console.log(`💥 Pollution event for ${sensorId}: ${pollutionEvent > 0 ? 'spike' : 'drop'} of ${Math.abs(pollutionEvent).toFixed(2)}`)
     }
 
     const trendChange = (Math.random() - 0.5) * 0.1 
@@ -225,7 +222,6 @@ export default class SensorDataGenerator {
     for (const key of this.sensorStates.keys()) {
       if (key.endsWith(`_${sensorId}`)) {
         this.sensorStates.delete(key)
-        console.log(`🔄 Reset sensor state for ${sensorId}`)
       }
     }
   }

@@ -18,7 +18,6 @@ class PrismaService {
         this.isConnected = true
       }
     } catch (error) {
-      console.error('Failed to connect to Prisma:', error)
     }
   }
 
@@ -27,10 +26,8 @@ class PrismaService {
       if (this.isConnected) {
         await this.client.$disconnect()
         this.isConnected = false
-        console.log('🔌 Prisma disconnected')
       }
     } catch (error) {
-      console.error('Error disconnecting Prisma:', error)
       throw error
     }
   }
@@ -40,7 +37,6 @@ class PrismaService {
       await this.client.$queryRaw`SELECT 1`
       return true
     } catch (error) {
-      console.error('Database health check failed:', error)
       return false
     }
   }

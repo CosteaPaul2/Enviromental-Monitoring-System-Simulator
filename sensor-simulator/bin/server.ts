@@ -44,9 +44,9 @@ new Ignitor(APP_ROOT, { importer: IMPORTER })
         // Check Redis connection
         const redisStatus = await RedisService.getConnectionStatus()
         if (redisStatus) {
-          console.log('✅ [SIMULATOR] Redis connected successfully')
+          // Redis connected successfully
         } else {
-          console.error('❌ [SIMULATOR] Redis connection failed - simulator will not work properly')
+          // Redis connection failed - simulator will not work properly
           process.exit(1)
         }
         
@@ -54,9 +54,9 @@ new Ignitor(APP_ROOT, { importer: IMPORTER })
         const simulatorService = SensorSimulatorService.getInstance()
         await simulatorService.start()
         
-        console.log('🚀 [SIMULATOR] All services initialized successfully')
+        // All services initialized successfully
       } catch (error) {
-        console.error('❌ [SIMULATOR] Failed to initialize services:', error)
+        // Failed to initialize services
         process.exit(1)
       }
     })
@@ -67,9 +67,9 @@ new Ignitor(APP_ROOT, { importer: IMPORTER })
         const SensorSimulatorService = (await import('#services/sensor_simulator_service')).default
         const simulatorService = SensorSimulatorService.getInstance()
         await simulatorService.stop()
-        console.log('👋 [SIMULATOR] Application shutdown complete')
+        // Application shutdown complete
       } catch (error) {
-        console.error('❌ [SIMULATOR] Error during shutdown:', error)
+        // Error during shutdown
       }
     })
 

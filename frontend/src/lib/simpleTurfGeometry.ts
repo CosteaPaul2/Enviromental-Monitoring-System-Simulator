@@ -4,18 +4,12 @@ import { ClientZone } from "../types/geometry";
 
 // Convert ClientZone to Turf Feature (handles all your shape types)
 function zoneToTurfFeature(zone: ClientZone): any {
-  console.log(
-    "Converting zone to turf feature:",
-    zone.type,
-    zone.geometry?.type,
-  );
 
   if (zone.type === "circle" && zone.geometry?.type === "Point") {
     const [lng, lat] = zone.geometry.coordinates;
     const radiusKm = (zone.radius || 1000) / 1000; // Convert meters to km
     const circle = turf.circle([lng, lat], radiusKm, { units: "kilometers" });
 
-    console.log("Created circle feature:", circle);
 
     return circle;
   }
@@ -23,7 +17,6 @@ function zoneToTurfFeature(zone: ClientZone): any {
   if (zone.geometry?.type === "Polygon") {
     const polygon = turf.polygon(zone.geometry.coordinates);
 
-    console.log("Created polygon feature:", polygon);
 
     return polygon;
   }
@@ -95,34 +88,23 @@ export function performGeometryOperation(
 
       case "intersection":
         if (zones.length < 2) return null;
-        console.log("Starting intersection with", zones.length, "zones");
 
         // For Turf.js v7+, intersect expects a FeatureCollection
         const intersectionFeatures = zones.map(zoneToTurfFeature);
 
-        console.log("Features to intersect:", intersectionFeatures);
 
         try {
           // Create FeatureCollection and call intersect
           const featureCollection =
             turf.featureCollection(intersectionFeatures);
 
-          console.log(
-            "About to call turf.intersect with FeatureCollection:",
-            featureCollection,
-          );
 
           result = turf.intersect(featureCollection as any);
-          console.log("Intersection result:", result);
 
           if (!result) {
-            console.log("No intersection found between the shapes");
-
             return null;
           }
         } catch (error) {
-          console.log("Intersection failed:", error);
-
           return null;
         }
         break;
@@ -201,8 +183,6 @@ export function performGeometryOperation(
       environmentalAnalysis: createAnalysis(result, operation, zones.length),
     };
   } catch (error) {
-    console.error("Geometry operation failed:", error);
-
     return null;
   }
 }

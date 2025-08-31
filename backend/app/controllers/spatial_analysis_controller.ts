@@ -1,6 +1,5 @@
 import { HttpContext } from '@adonisjs/core/http'
 import PrismaService from '#services/prisma_service'
-// Removed external APIs service
 
 export default class SpatialAnalysisController {
   private prisma = PrismaService.client
@@ -27,7 +26,6 @@ export default class SpatialAnalysisController {
 
       const sensorsInZone = await this.getSensorsInClientZone(geomText)
 
-      // Simplified analysis without external APIs
       const basicAnalysis = this.getBasicAnalysis(geometry, sensorsInZone)
 
       return response.json({
@@ -47,7 +45,6 @@ export default class SpatialAnalysisController {
         },
       })
     } catch (error) {
-      console.error('Failed to analyze client zone:', error)
       return response.status(500).json({
         success: false,
         message: 'Failed to analyze zone',
@@ -78,7 +75,6 @@ export default class SpatialAnalysisController {
 
       return sensors
     } catch (error) {
-      console.warn('Failed to query sensors in client zone:', error)
       return []
     }
   }
@@ -114,7 +110,7 @@ export default class SpatialAnalysisController {
     const areaKm2 = area / 1000000
 
     return {
-      area: Math.round(areaKm2 * 100) / 100, // Round to 2 decimals
+      area: Math.round(areaKm2 * 100) / 100, 
       coverage: sensors.length > 0 ? 'monitored' : 'unmonitored',
       activeSensors: sensors.filter((s) => s.active).length,
       totalSensors: sensors.length,
@@ -135,23 +131,4 @@ export default class SpatialAnalysisController {
     return 1000000
   }
 
-  // Removed complex population analysis
-
-  // Removed complex infrastructure analysis
-
-  // Removed geometry center calculation
-
-  // Removed environmental context analysis
-
-  // Removed zone classification
-
-  // Removed accessibility index calculation
-
-  // Removed risk assessment calculation
-
-  // Removed recommendations generation
-
-  // Removed population fallback
-
-  // Removed infrastructure fallback
 }

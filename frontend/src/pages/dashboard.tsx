@@ -108,7 +108,6 @@ export default function DashboardPage(): React.JSX.Element {
           setSensors(response.data.sensors);
         }
       } catch (error) {
-        console.error("Failed to fetch sensors:", error);
       } finally {
         setSensorsLoading(false);
       }
@@ -176,7 +175,6 @@ export default function DashboardPage(): React.JSX.Element {
         duration: 2000,
       });
     } catch (error) {
-      console.error("Failed to refresh:", error);
       addErrorNotification(
         "Refresh Failed",
         "Could not update environmental data",

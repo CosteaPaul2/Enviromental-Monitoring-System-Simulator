@@ -129,8 +129,6 @@ export const spatialAnalysisApi = {
 
       return response.data;
     } catch (error: any) {
-      console.error("Failed to analyze client zone:", error);
-
       return {
         success: false,
         message: error.response?.data?.message || "Failed to analyze zone",

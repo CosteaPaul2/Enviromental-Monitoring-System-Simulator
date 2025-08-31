@@ -114,7 +114,6 @@ export default class PollutionAnalysisService {
         active: true,
       }
     } catch (error) {
-      console.error(`Error analyzing sensor pollution for sensor ${sensorId}:`, error)
       return {
         sensorId,
         sensorName: sensorName || `Sensor ${sensorId}`,
@@ -486,9 +485,6 @@ export default class PollutionAnalysisService {
     sensors: any[],
     targetDate: Date
   ): Promise<ShapePollutionAnalysis> {
-    console.log(
-      `🔍 Analyzing historical pollution for shape "${shapeName}" at ${targetDate.toISOString()}`
-    )
 
     const sensorPollutionData: SensorPollutionData[] = sensors.map((sensor) => {
       let pollutionLevel: 'good' | 'moderate' | 'unhealthy' | 'dangerous' | 'no-data' = 'no-data'
@@ -530,9 +526,6 @@ export default class PollutionAnalysisService {
       riskScore
     )
 
-    console.log(
-      `📊 Historical analysis complete for "${shapeName}": ${overallPollutionLevel} (Risk: ${riskScore})`
-    )
 
     return {
       shapeId,

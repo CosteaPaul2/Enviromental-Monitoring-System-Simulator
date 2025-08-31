@@ -85,7 +85,6 @@ export function HistoricalDataProvider({
       setIsLoading(true);
       setError(null);
 
-      console.log("🕐 Loading historical data for:", dateTime.toISOString());
 
       // Load historical sensors with their states at the specified time
       const sensorsResponse = await api.get("/sensors/historical", {
@@ -109,9 +108,7 @@ export function HistoricalDataProvider({
         setHistoricalShapes(shapesResponse.data.data.shapes || []);
       }
 
-      console.log("✅ Historical data loaded successfully");
     } catch (error: any) {
-      console.error("❌ Failed to load historical data:", error);
       setError(
         error.response?.data?.message || "Failed to load historical data",
       );

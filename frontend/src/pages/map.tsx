@@ -132,7 +132,6 @@ export default function okMapPage() {
         triggerShapeUpdate();
       }
     } catch (error) {
-      console.error("Failed to place sensor:", error);
     }
   };
 
@@ -174,11 +173,9 @@ export default function okMapPage() {
   };
 
   const handleClientZoneDelete = (zoneId: string) => {
-    console.log("Deleting zone:", zoneId);
     setClientZones((prev) => {
       const filtered = prev.filter((zone) => zone.id !== zoneId);
 
-      console.log("Zones after deletion:", filtered.length);
 
       return filtered;
     });
@@ -211,10 +208,6 @@ export default function okMapPage() {
       2;
 
     if (selectedZoneObjects.length < minRequired) {
-      console.warn(
-        `Operation ${operation} requires at least ${minRequired} zones, got ${selectedZoneObjects.length}`,
-      );
-
       return;
     }
 

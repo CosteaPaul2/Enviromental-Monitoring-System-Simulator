@@ -36,7 +36,6 @@ export default function AdminDashboardPage() {
         setStats(response.data);
       }
     } catch (error) {
-      console.error("Failed to fetch dashboard stats:", error);
       addErrorNotification(
         "Failed to Load",
         "Could not fetch dashboard statistics",

@@ -186,7 +186,6 @@ export const usePollutionMonitor = (
       setError(
         err instanceof Error ? err.message : "Failed to load pollution data",
       );
-      console.error("Failed to refresh pollution data:", err);
     } finally {
       setLoading(false);
     }

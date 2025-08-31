@@ -69,7 +69,6 @@ export const useShapeManager = ({
         `"${shapeName}" has been saved successfully`,
       );
     } catch (error) {
-      console.error("Failed to save shape:", error);
       addErrorNotification(
         "Save Failed",
         "Failed to save shape. Please try again.",
@@ -131,7 +130,6 @@ export const useShapeManager = ({
           }
         }
       } catch (error) {
-        console.warn("Failed to auto-analyze client zone:", error);
         addErrorNotification(
           "Analysis Error",
           "Could not analyze zone automatically - you can analyze it manually from the panel",

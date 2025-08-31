@@ -136,7 +136,6 @@ export default function SensorDetailPage() {
         setChartData(chartData);
       }
     } catch (error) {
-      console.error("Failed to load sensor data:", error);
     } finally {
       setLoading(false);
     }

@@ -53,7 +53,6 @@ export default function DrawingControls({
     map.off("click");
 
     if (selectedTool) {
-      console.log(`Setting up custom drawing for ${selectedTool}`);
 
       map.getContainer().style.cursor = "crosshair";
       map.dragging.disable();
@@ -501,12 +500,6 @@ export default function DrawingControls({
           try {
             geometry = JSON.parse(shape.geometry);
           } catch (error) {
-            console.error(
-              "Failed to parse geometry string:",
-              shape.geometry,
-              error,
-            );
-
             return;
           }
         } else {
@@ -514,8 +507,6 @@ export default function DrawingControls({
         }
 
         if (!geometry || !geometry.type || !geometry.coordinates) {
-          console.warn("Invalid geometry:", geometry);
-
           return;
         }
 
@@ -600,16 +591,11 @@ export default function DrawingControls({
           }
         }
       } catch (error) {
-        console.error("Error loading saved shape:", error, shape);
       }
     });
   }, [map, savedShapes]);
 
   useEffect(() => {
-    console.log(
-      "DrawingControls: Rendering client zones:",
-      clientZones?.length || 0,
-    );
     if (!map || !clientZones) return;
 
     const clientZoneLayer = new L.FeatureGroup();
@@ -673,7 +659,6 @@ export default function DrawingControls({
           clientZoneLayer.addLayer(layer);
         }
       } catch (error) {
-        console.error("Error rendering client zone:", error, zone);
       }
     });
 
